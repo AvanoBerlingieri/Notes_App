@@ -1,11 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+
 namespace NotesApp.Model;
 
 public class Note
 {
-    [Key]
-    public Guid NoteId { get; set; } = Guid.NewGuid();
+    [Key] public Guid NoteId { get; set; } = Guid.NewGuid();
 
     [Required] [MaxLength(50)] public required string Title { get; set; }
 

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+
 namespace NotesApp.Model;
 
 // This is a join table for notes and users
@@ -8,7 +9,7 @@ public class NoteCollaborator
 
     [Required] public Guid UserId { get; set; }
 
-    [Required] public required NoteRole Role { get; set; }  
+    [Required] public required NoteRole Role { get; set; }
 
     public DateTime DateAdded { get; private set; } = DateTime.UtcNow;
 

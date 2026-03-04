@@ -1,8 +1,6 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using NotesApp.Data;
-using NotesApp.DTO;
 using NotesApp.DTO.Auth;
 using NotesApp.Model;
 
@@ -27,7 +25,7 @@ public class AuthController
     {
         return null;
     }
-    
+
     [HttpPost("signup")]
     public async Task<IActionResult> Signup(SignupDto dto)
     {
