@@ -1,9 +1,23 @@
 ﻿using System.ComponentModel.DataAnnotations;
-namespace NotesApp.Model;
-
 using Microsoft.AspNetCore.Identity;
+namespace NotesApp.Model;
 
 public class User : IdentityUser<Guid>
 {
-  
+    /* This is handled by identity
+    Guid Id { get; set; }
+    string UserName { get; set; }
+    Email { get; set; }    
+    string PasswordHash { get; set; }
+    */
+    
+    [Required] [MaxLength(25)] public required string FirstName { get; set; }
+   
+    [Required] [MaxLength(25)] public required string LastName { get; set; }
+   
+    public DateTime DateCreated { get; private set; } = DateTime.UtcNow;
+    
+    // nav properties
+    public ICollection<Note> OwnedNotes { get; set; } = new List<Note>();
+    public ICollection<NoteCollaborator> Collaborations { get; set; } = new List<NoteCollaborator>();
 }
