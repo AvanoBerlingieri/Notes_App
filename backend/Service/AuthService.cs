@@ -1,6 +1,9 @@
-﻿namespace NotesApp.Service;
+﻿using NotesApp.DTO.Auth;
 
-public interface IUserService
+namespace NotesApp.Service;
+
+public interface IAuthService
 {
-    
+    Task SignupAsync(SignupDto dto);
+    Task<AuthResponseDto> LoginAsync(LoginDto dto);
 }
