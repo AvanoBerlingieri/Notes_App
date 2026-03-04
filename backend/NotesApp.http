@@ -1,6 +1,0 @@
-@address = http://localhost:8080
-
-GET {{NotesApp_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

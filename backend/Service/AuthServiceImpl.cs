@@ -110,45 +110,38 @@ public class AuthService : IAuthService
     /// <returns>Token string and expiration timestamp</returns>
     private (string Token, DateTime Expiration) GenerateJwtToken(User user)
     {
-        var jwtSettings = _configuration.GetSection("Jwt");
-
-        // Define claims embedded inside the token
+        // Load JWT configuration from environment variables
+        var jwtKey = Environment.GetEnvironmentVariable("JWT_KEY");
+        var jwtIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER");
+        var jwtAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE");
+        var jwtDuration = int.Parse(Environment.GetEnvironmentVariable("JWT_DURATION_MINUTES"));
+        
+        // Define claims for the JWT
         var claims = new List<Claim>
         {
-            // Subject (standard JWT claim)
             new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-
-            // Unique user identifier (used for authorization checks)
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-
-            // Username claim
             new Claim(ClaimTypes.Name, user.UserName!),
-
-            // Email claim
             new Claim(JwtRegisteredClaimNames.Email, user.Email!)
         };
 
-        // Create symmetric security key from configured secret
-        var key = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(jwtSettings["Key"]!));
-
-        // Create signing credentials using HMAC SHA256
+        // Create signing credentials
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-        // Set token expiration time for 1 day
-        var expiration = DateTime.UtcNow.AddMinutes(
-            double.Parse(jwtSettings["1440"]!));
+        // Set token expiration
+        var expiration = DateTime.UtcNow.AddMinutes(jwtDuration);
 
-        // Build JWT token object
+        // Build the JWT token
         var token = new JwtSecurityToken(
-            issuer: jwtSettings["Issuer"],
-            audience: jwtSettings["Audience"],
+            issuer: jwtIssuer,
+            audience: jwtAudience,
             claims: claims,
             expires: expiration,
             signingCredentials: creds
         );
 
-        // Return serialized token string
+        // Return serialized token and expiration
         return (new JwtSecurityTokenHandler().WriteToken(token), expiration);
     }
     
