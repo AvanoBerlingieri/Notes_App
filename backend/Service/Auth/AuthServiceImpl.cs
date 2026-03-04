@@ -7,7 +7,7 @@ using System.Security.Claims;
 using System.Text;
 using NotesApp.DTO.Auth;
 
-namespace NotesApp.Service;
+namespace NotesApp.Service.Auth;
 
 /// <summary>
 /// Handles authentication-related business logic such as
@@ -112,6 +112,7 @@ public class AuthService : IAuthService
     {
         // Load JWT configuration from environment variables
         var jwtKey = Environment.GetEnvironmentVariable("JWT_KEY");
+        if (string.IsNullOrEmpty(jwtKey)) {throw new Exception("JWT_KEY is not configured.");}
         var jwtIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER");
         var jwtAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE");
         var jwtDuration = int.Parse(Environment.GetEnvironmentVariable("JWT_DURATION_MINUTES"));

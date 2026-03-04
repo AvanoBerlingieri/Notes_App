@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using NotesApp.DTO.Auth;
-using NotesApp.Service;
+using NotesApp.Service.Auth;
 
 namespace NotesApp.Controller;
 
@@ -34,11 +34,13 @@ public class AuthController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        // Delegate signup logic to the AuthService
+        // call signup method
         await _authService.SignupAsync(dto);
 
         // Return success status
-        return StatusCode(201, new { message = "User created successfully." });
+        return StatusCode(201, new {
+            message = "User created successfully."
+        });
     }
 
     /// <summary>
@@ -58,10 +60,38 @@ public class AuthController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        // Delegate login logic to the AuthService
+        // call login method
         var response = await _authService.LoginAsync(dto);
+        
+        Response.Cookies.Append("accessToken", response.Token, new CookieOptions
+        {
+            HttpOnly = true,
+            // Secure = true, uncomment when going into prod
+            SameSite = SameSiteMode.Lax,
+            Expires = response.Expiration
+        });
 
         // Return authentication response
-        return Ok(response);
+        return StatusCode(200, new {
+            response.UserId,
+            response.Email,
+            response.UserName,
+            message = "User authenticated successfully."
+        });
+    }
+
+    /// <summary>
+    /// Deletes jwt from cookie to end user session
+    /// </summary>
+    /// <returns>Returns 200 status code</returns>
+    [HttpPost("logout")]
+    public async Task<IActionResult> Logout()
+    {
+        // delete jwt from cookie
+        Response.Cookies.Delete("accessToken");
+
+        return StatusCode(200, new {
+            message = "Logged out successfully."
+        });
     }
 }

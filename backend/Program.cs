@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using NotesApp.Data;
 using NotesApp.Model;
-using NotesApp.Service;
+using NotesApp.Service.Auth;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -18,14 +18,9 @@ var user = Environment.GetEnvironmentVariable("DB_USER");
 var password = Environment.GetEnvironmentVariable("DB_PASSWORD");
 var connectionString = $"Host={host};Port={port};Database={name};Username={user};Password={password}";
 
-var jwtKey = Environment.GetEnvironmentVariable("JWT_KEY")!;
-var jwtIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER")!;
-var jwtAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE")!;
-var jwtDuration = int.Parse(Environment.GetEnvironmentVariable("JWT_DURATION_MINUTES")!);
-
 // Add services to the container.
 builder.Services.AddOpenApi();
-builder.Services.AddAuthentication();
+builder.Services.AddControllers();   
 builder.Services.AddAuthorization();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -37,6 +32,7 @@ builder.Services
     .AddDefaultTokenProviders();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
+
 
 builder.Services.AddAuthentication(options =>
     {
@@ -51,13 +47,26 @@ builder.Services.AddAuthentication(options =>
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = jwtIssuer,
-            ValidAudience = jwtAudience,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
+            ValidIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER"),
+            ValidAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE"),
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWT_KEY")!)
+            )
+        };
+
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                context.Token = context.Request.Cookies["accessToken"];
+                return Task.CompletedTask;
+            }
         };
     });
 
 var app = builder.Build();
+
+// app.UseHttpsRedirection(); uncomment when deploying
 
 app.UseAuthentication();
 app.UseAuthorization();
@@ -70,4 +79,4 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-// app.UseHttpsRedirection();
+app.Run();

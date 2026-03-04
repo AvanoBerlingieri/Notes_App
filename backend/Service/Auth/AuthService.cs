@@ -1,6 +1,6 @@
 ﻿using NotesApp.DTO.Auth;
 
-namespace NotesApp.Service;
+namespace NotesApp.Service.Auth;
 
 public interface IAuthService
 {
