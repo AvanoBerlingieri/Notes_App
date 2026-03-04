@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using NotesApp.Data;
 using NotesApp.DTO;
+using NotesApp.DTO.Auth;
 using NotesApp.Model;
 
 namespace NotesApp.Controller;
@@ -19,5 +21,16 @@ public class AuthController
         _userManager = userManager;
         _signInManager = signInManager;
     }
+
+    [HttpPost("login")]
+    public async Task<IActionResult> Login(LoginDto dto)
+    {
+        return null;
+    }
     
+    [HttpPost("signup")]
+    public async Task<IActionResult> Signup(SignupDto dto)
+    {
+        return null;
+    }
 }

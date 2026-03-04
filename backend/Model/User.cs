@@ -11,9 +11,9 @@ public class User : IdentityUser<Guid>
     string PasswordHash { get; set; }
     */
     
-    [Required] [MaxLength(25)] public required string FirstName { get; set; }
+    [MaxLength(25)] public string? FirstName { get; set; }
    
-    [Required] [MaxLength(25)] public required string LastName { get; set; }
+    [MaxLength(25)] public string? LastName { get; set; }
    
     public DateTime DateCreated { get; private set; } = DateTime.UtcNow;
     
