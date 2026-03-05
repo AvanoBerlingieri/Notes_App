@@ -1,13 +1,6 @@
-import axios from "axios";
-
-const API = process.env.REACT_APP_API_URL;
+import apiClient from "./ApiClientWithCred";
 
 export async function loginUser(data) {
-    const res = await axios.post(`${API}/auth/login`, data, {
-        withCredentials: true,
-        headers: {
-            "Content-Type": "application/json",
-        },
-    });
+    const res = await apiClient.post("/auth/login", data);
     return res.data;
 }

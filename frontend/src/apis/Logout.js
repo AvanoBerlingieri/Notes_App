@@ -1,10 +1,6 @@
-import axios from "axios";
-const API = process.env.REACT_APP_API_URL;
+import apiClient from "./ApiClientWithCred";
 
 export async function logoutUser() {
-    const res = await axios.post(`${API}/auth/logout`, {},
-        {
-            withCredentials: true
-        });
+    const res = await apiClient.post("/auth/logout");
     return res.data;
 }
