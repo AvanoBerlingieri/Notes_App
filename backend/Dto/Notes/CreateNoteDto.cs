@@ -2,9 +2,9 @@
 
 namespace NotesApp.DTO.Notes;
 
-public class NoteDto
+public class CreateNoteDto
 {
     [Required] [MaxLength(50)] public required string Title { get; set; }
 
-    [Required] public required string Content { get; set; }
+    [Required] public required string Content { get; set; } = " ";
 }

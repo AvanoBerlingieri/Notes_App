@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using DotNetEnv;
+using NotesApp.Hub;
+using NotesApp.Service.Notes;
 
 var builder = WebApplication.CreateBuilder(args);
 Env.Load();
@@ -32,6 +34,7 @@ builder.Services
     .AddDefaultTokenProviders();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<INoteService, NoteService>();
 
 
 builder.Services.AddAuthentication(options =>
@@ -64,14 +67,30 @@ builder.Services.AddAuthentication(options =>
         };
     });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:3000")
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials();
+        });
+});
+
+builder.Services.AddSignalR();
+
 var app = builder.Build();
 
 // app.UseHttpsRedirection(); uncomment when deploying
+app.UseCors("AllowFrontend");
 
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHub<NoteHub>("/NoteHub");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

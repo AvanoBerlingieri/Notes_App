@@ -2,7 +2,7 @@ namespace NotesApp.Model;
 
 public enum NoteRole
 {
-    Owner,
+    Owner, // might remove this
     Editor,
     Viewer
 }
