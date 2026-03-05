@@ -1,4 +1,4 @@
-import apiClient from "./ApiClientWithoutCred";
+import apiClient from ".././ApiClientWithoutCred";
 
 export async function signupUser(data) {
     const res = await apiClient.post("/auth/signup", data);
