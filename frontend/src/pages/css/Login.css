@@ -1,0 +1,58 @@
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: dodgerblue;
+}
+
+.login-card {
+    justify-content: center;
+    padding: 50px;
+    border-radius: 20px;
+    border: 2px solid;
+    width: 400px;
+    text-align: center;
+    background-color: white;
+}
+
+.login-card h2 {
+    font-size: 40px;
+    color: royalblue;
+}
+
+.login-card input {
+    width: 90%;
+    padding: 14px;
+    margin: 10px 0;
+    border-radius: 8px;
+    border: 1px solid grey;
+    font-size: 16px;
+}
+
+.login-card button,
+.login-card .signup-link button {
+    width: 99%;
+    padding: 14px;
+    margin-top: 10px;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.login-card .loginBtn:hover {
+    background: darkgreen !important;
+}
+
+.login-card .message {
+    color: red;
+}
+
+.login-card .signupBtn {
+    background-color: dodgerblue !important;
+}
+
+.login-card .signupBtn:hover {
+ background: blue !important;
+}
