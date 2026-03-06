@@ -72,36 +72,36 @@ public class NoteService : INoteService
     /// </summary>
     /// <param name="userId">The ID of the user attempting to edit the note.</param>
     /// <param name="noteId">The ID of the note being edited.</param>
-    /// <param name="newContent">The updated content of the note.</param>
+    /// <param name="updatedTitle">The updated title of the note.</param>
     /// <returns>
     ///     A DTO containing the updated note content.
     /// </returns>
     /// <exception cref="Exception">
     ///     Thrown if the note does not exist or the user does not have edit permission.
     /// </exception>
-    public async Task<UpdateNoteDto> EditNoteAsync(Guid userId, Guid noteId, string newContent)
+    public async Task<UpdateNoteTitleDto> EditNoteAsync(Guid userId, Guid noteId, string updatedTitle)
     {
         var note = await _context.Notes
             .Include(n => n.Collaborators)
             .FirstOrDefaultAsync(n => n.NoteId == noteId);
 
-        if (note == null) throw new Exception("Note not found.");
+        if (note == null) {throw new Exception("Note not found.");}
 
         // Check if user has editing rights
         var canEdit = note.OwnerId == userId ||
                       note.Collaborators.Any(c => c.UserId == userId && c.Role == NoteRole.Editor);
 
-        if (!canEdit) throw new Exception("You do not have permission to edit this note.");
+        if (!canEdit) {throw new Exception("You do not have permission to edit this note.");}
 
-        note.Content = newContent;
+        note.Title = updatedTitle;
         note.LastModified = DateTime.UtcNow;
 
         await _context.SaveChangesAsync();
 
         // Return updated note
-        return new UpdateNoteDto
+        return new UpdateNoteTitleDto
         {
-            Content = note.Content
+            Title =  updatedTitle,
         };
     }
 

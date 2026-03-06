@@ -123,7 +123,7 @@ public class NotesController : ControllerBase
     ///     Only the owner or collaborators with the Editor role are allowed to edit.
     /// </summary>
     /// <param name="noteId">The unique identifier of the note to edit.</param>
-    /// <param name="dto">Contains the updated note content.</param>
+    /// <param name="updatedTitle">Contains the updated note title.</param>
     /// <returns>
     ///     Returns the updated note content if the operation succeeds.
     ///     Returns 401 if the user is not authenticated.
@@ -131,7 +131,7 @@ public class NotesController : ControllerBase
     /// </returns>
     [Authorize]
     [HttpPut("{noteId:guid}")]
-    public async Task<IActionResult> EditNote([FromRoute] Guid noteId, [FromBody] UpdateNoteDto dto)
+    public async Task<IActionResult> EditNote([FromRoute] Guid noteId, [FromBody] string updatedTitle)
     {
         // Grab userId from the claims in the JWT
         var userId = GetUserId();
@@ -139,7 +139,7 @@ public class NotesController : ControllerBase
 
         try
         {
-            var note = await _noteService.EditNoteAsync(userId, noteId, dto.Content);
+            var note = await _noteService.EditNoteAsync(userId, noteId, updatedTitle);
             return Ok(note);
         }
         catch (Exception ex)
