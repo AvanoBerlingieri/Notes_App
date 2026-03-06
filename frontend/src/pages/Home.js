@@ -1,16 +1,41 @@
-import { useEffect, useState } from "react";
-import { GetAllNotes } from "../apis/note/GetAllNotes";
-import { useNavigate } from "react-router-dom";
-import "./css/Home.css";
+import {useEffect, useState} from "react";
+import {GetAllNotes} from "../apis/note/GetAllNotes";
+import {EditNote} from "../apis/note/EditNote";
 import {CreateNote} from "../apis/note/CreateNote";
+import {DeleteNote} from "../apis/note/DeleteNote";
+
+import CreateNoteModel from "../components/models/CreateNoteModel";
+import RenameNoteModel from "../components/models/RenameNoteModel";
+import DeleteNoteModel from "../components/models/DeleteNoteModel";
+
+import NoteCard from "../components/notes/NoteCard";
+import NoteRow from "../components/notes/NoteRow";
+
+import {useNavigate} from "react-router-dom";
+
+import "./css/Home.css";
+
+import {FiSearch} from "react-icons/fi";
+import {IoSettingsSharp} from "react-icons/io5";
+import {CgProfile} from "react-icons/cg";
 
 export default function Home() {
 
     const [notes, setNotes] = useState([]);
+    const [searchInput, setSearchInput] = useState("");
     const [search, setSearch] = useState("");
-    const [filter, setFilter] = useState("all");
     const [sort, setSort] = useState("recent");
+    const [viewMode, setViewMode] = useState("grid");
+
+    const [openMenu, setOpenMenu] = useState(null);
+
     const [showModal, setShowModal] = useState(false);
+    const [showRenameModal, setShowRenameModal] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+    const [selectedNote, setSelectedNote] = useState(null);
+    const [renameTitle, setRenameTitle] = useState("");
+
     const [newNote, setNewNote] = useState({
         Title: "",
         Content: "Test",
@@ -28,132 +53,176 @@ export default function Home() {
     }
 
     const filteredNotes = notes
-        .filter(note => {
-            if (filter === "0")
-                return note.CurrentUserRole === "Owner";
-
-            if (filter === "1" || "2")
-                return note.CurrentUserRole !== "Owner";
-
-            return true;
-        })
         .filter(note =>
-            note.title.toLowerCase().includes(search.toLowerCase())
+            note.title?.toLowerCase().includes(search.toLowerCase())
         )
         .sort((a, b) => {
+
             if (sort === "Alphabetical")
                 return a.title.localeCompare(b.title);
 
             if (sort === "recent")
-                return new Date(b.LastModified) - new Date(a.LastModified);
+                return new Date(b.lastModified) - new Date(a.lastModified);
 
             return 0;
         });
 
     async function handleCreateNote() {
+
         if (!newNote.Title) return;
 
-        try {
-            await CreateNote({
-                Title: newNote.Title,
-                Content: newNote.Content
-            });
+        await CreateNote({
+            Title: newNote.Title,
+            Content: newNote.Content
+        });
 
-            setShowModal(false);
-            setNewNote({ Title: "", Content: "Test" }); // Reset form
-            loadNotes();
-        } catch (err) {
-            console.error("Failed to create note", err);
-        }
+        setShowModal(false);
+        setNewNote({Title: "", Content: "Test"});
+
+        await loadNotes();
     }
 
     return (
         <div className="home-container">
+            <div className="topbar">
 
-            <div className="toolbar">
+                <div className="topbar-left">
+                    <h2 className="app-title">Notes App</h2>
+                </div>
 
-                <button className="create-btn" onClick={() => setShowModal(true)}>New Note</button>
-
-                <input
-                    className="search-bar"
-                    placeholder="Search notes..."
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                />
-
-                <select
-                    className="filter"
-                    value={filter}
-                    onChange={(e) => setFilter(e.target.value)}
-                >
-                    <option value="all">All Notes</option>
-                    <option value="owned">Owned</option>
-                    <option value="collab">Collaborations</option>
-                </select>
-
-                <select
-                    className="sort"
-                    value={sort}
-                    onChange={(e) => setSort(e.target.value)}
-                >
-                    <option value="recent">Last Edited</option>
-                    <option value="Alphabetical">Alphabetical</option>
-                </select>
-
-            </div>
-
-            <div className="notes-grid">
-                {filteredNotes.map(note => (
-                    <div key={note.noteId} className="note-card"
-                         onClick={() => navigate(`/note/${note.noteId}`)}>
-
-                        <h3>{note.title}</h3>
-
-                        <p>
-                            Last edited: {new Date(note.lastModified).toLocaleDateString()}
-                        </p>
-
-                        <span className="role">
-                            {note.currentUserRole}
-                        </span>
-                    </div>
-                ))}
-            </div>
-            {showModal && (
-                <div className="modal-overlay">
-                    <div className="modal">
-
-                        <h2>Create New Note</h2>
+                <div className="topbar-center">
+                    <div className="search-container">
 
                         <input
-                            placeholder="Note title"
-                            value={newNote.Title}
-                            onChange={(e) =>
-                                setNewNote({ ...newNote, Title: e.target.value })
-                            }
+                            className="search-bar"
+                            placeholder="Search notes..."
+                            value={searchInput}
+                            onChange={(e) => setSearchInput(e.target.value)}
                         />
 
-                        <div className="modal-buttons">
-
-                            <button
-                                className="cancel-btn"
-                                onClick={() => setShowModal(false)}
-                            >
-                                Cancel
-                            </button>
-
-                            <button
-                                className="create-btn"
-                                onClick={handleCreateNote}
-                            >
-                                Create
-                            </button>
-
-                        </div>
+                        <button
+                            className="search-btn"
+                            onClick={() => setSearch(searchInput)}
+                        ><FiSearch/>
+                        </button>
 
                     </div>
                 </div>
-            )}
+
+                <div className="topbar-right">
+
+                    <div
+                        className="user-info"
+                        onClick={() => navigate("/profile")}
+                    >
+                        <span className="username">Username</span>
+                        <span className="profile-icon"><CgProfile/></span>
+                    </div>
+
+                    <span className="settings-icon"
+                          onClick={() => navigate("/settings")}
+                    ><IoSettingsSharp/>
+                    </span>
+
+                </div>
+            </div>
+
+            <div className="content">
+                <div className="toolbar">
+
+                    <button
+                        className="create-btn"
+                        onClick={() => setShowModal(true)}
+                    >New Note
+                    </button>
+
+                    <select className="sort"
+                            value={sort}
+                            onChange={(e) => setSort(e.target.value)}
+                    >
+                        <option value="recent">Last Edited</option>
+                        <option value="Alphabetical">Alphabetical</option>
+                    </select>
+
+                    <div className="view-toggle">
+
+                        <button
+                            className={viewMode === "grid" ? "active" : ""}
+                            onClick={() => setViewMode("grid")}
+                        >Grid
+                        </button>
+
+                        <button
+                            className={viewMode === "list" ? "active" : ""}
+                            onClick={() => setViewMode("list")}
+                        >List
+                        </button>
+
+                    </div>
+                </div>
+
+                <div className={viewMode === "grid" ? "notes-grid" : "notes-list"}>
+
+                    {filteredNotes.map(note => {
+
+                        const props = {
+                            note,
+                            openMenu,
+                            setOpenMenu,
+                            onOpen: () => navigate(`/note/${note.noteId}`),
+                            onRename: () => {
+                                setSelectedNote(note);
+                                setRenameTitle(note.title);
+                                setShowRenameModal(true);
+                                setOpenMenu(null);
+                            },
+                            onDelete: () => {
+                                setSelectedNote(note);
+                                setShowDeleteModal(true);
+                                setOpenMenu(null);
+                            }
+                        };
+
+                        return viewMode === "grid"
+                            ? <NoteCard key={note.noteId} {...props}/>
+                            : <NoteRow key={note.noteId} {...props}/>
+
+                    })}
+                </div>
+            </div>
+
+            <CreateNoteModel
+                show={showModal}
+                newNote={newNote}
+                setNewNote={setNewNote}
+                onCancel={() => setShowModal(false)}
+                onCreate={handleCreateNote}
+            />
+
+            <RenameNoteModel
+                show={showRenameModal}
+                renameTitle={renameTitle}
+                setRenameTitle={setRenameTitle}
+                onCancel={() => setShowRenameModal(false)}
+                onSave={async () => {
+                    await EditNote(selectedNote.noteId, renameTitle);
+                    await loadNotes();
+                    setShowRenameModal(false);
+                }}
+            />
+
+            <DeleteNoteModel
+                show={showDeleteModal}
+                note={selectedNote}
+                onCancel={() => setShowDeleteModal(false)}
+                onConfirm={async () => {
+                    await DeleteNote(selectedNote.noteId);
+                    await loadNotes();
+                    setSelectedNote(null);
+                    setShowDeleteModal(false);
+                }}
+            />
+
         </div>
     );
 }

@@ -1,15 +1,76 @@
+/* ---------- TOP BAR ---------- */
+
+.topbar {
+    background: #cfe8ff;
+    height: 75px;
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    align-items: center;
+    padding: 0 40px;
+}
+
+.topbar-left {
+    display: flex;
+    align-items: center;
+}
+
+.app-title {
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.topbar-center {
+    display: flex;
+    justify-content: center;
+}
+
+.topbar-right {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 15px;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.username {
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.profile-icon {
+    font-size: 26px;
+}
+
+.settings-icon {
+    font-size: 26px;
+    cursor: pointer;
+}
+
+/* ---------- PAGE CONTENT ---------- */
+
 .home-container {
-    padding: 20px;
     height: 100vh;
     display: flex;
     flex-direction: column;
 }
 
+.content {
+    padding: 50px 200px;
+}
+
+/* ---------- TOOLBAR ---------- */
+
 .toolbar {
     display: flex;
-    gap: 15px;
     align-items: center;
-    margin-bottom: 25px;
+    gap: 15px;
+    margin-bottom: 30px;
 }
 
 .create-btn {
@@ -25,31 +86,57 @@
     background: #1666c1;
 }
 
-.search-bar {
-    flex: 1;
+.sort {
     padding: 10px;
     border-radius: 8px;
     border: 1px solid #ccc;
 }
 
-.filter,
-.sort {
+.search-bar {
+    width: 400px;
     padding: 10px;
     border-radius: 8px;
+    border: 1px solid #ccc;
 }
 
+/* ---------- VIEW TOGGLE ---------- */
+
+.view-toggle {
+    margin-left: auto;
+    display: flex;
+    gap: 6px;
+}
+
+.view-toggle button {
+    padding: 8px 14px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    background: white;
+    cursor: pointer;
+}
+
+.view-toggle button.active {
+    background: #1a73e8;
+    color: white;
+}
+
+/* ---------- GRID VIEW ---------- */
 
 .notes-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 22px;
 }
 
 .note-card {
     background: white;
     border: 1px solid #e4e4e4;
     border-radius: 10px;
-    padding: 16px;
+    padding: 18px;
+    height: 150px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
     cursor: pointer;
     transition: 0.2s;
 }
@@ -59,14 +146,78 @@
     box-shadow: 0 5px 15px rgba(0,0,0,0.08);
 }
 
-.note-card h3 {
-    margin-bottom: 10px;
+.note-content h3 {
+    margin-bottom: 8px;
 }
 
-.role {
+.preview {
+    font-size: 14px;
+    color: #555;
+}
+
+/* footer inside card */
+
+.note-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.date {
     font-size: 12px;
     color: gray;
 }
+
+/* ---------- LIST VIEW ---------- */
+
+.notes-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.note-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 18px;
+    border: 1px solid #e4e4e4;
+    border-radius: 8px;
+    background: white;
+    cursor: pointer;
+    transition: 0.15s;
+}
+
+.note-row:hover {
+    background: #f7f7f7;
+}
+
+.note-row .note-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.note-row .preview {
+    font-size: 13px;
+    color: gray;
+}
+
+.note-row .note-footer {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+/* ---------- ACTIONS ---------- */
+
+.note-actions {
+    border: none;
+    background: transparent;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+/* ---------- MODAL ---------- */
 
 .modal-overlay {
     position: fixed;
@@ -90,8 +241,7 @@
     gap: 15px;
 }
 
-.modal input,
-.modal textarea {
+.modal input {
     padding: 10px;
     font-size: 14px;
 }
@@ -100,4 +250,91 @@
     display: flex;
     justify-content: flex-end;
     gap: 10px;
+}
+
+.cancel-btn {
+    background: #ddd;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+/* ---------- SEARCH BAR ---------- */
+
+.search-container {
+    border: 1px solid lightgrey;
+    border-radius: 20px;
+    overflow: hidden;
+    background: white;
+}
+
+.search-bar {
+    border: none;
+    padding: 10px;
+    width: 375px;
+    outline: none;
+}
+
+.search-btn {
+    background: #1a73e8;
+    color: white;
+    border: none;
+    padding: 10px 14px;
+    cursor: pointer;
+}
+
+.search-btn:hover {
+    background: #1666c1;
+}
+
+/* ---------- NOTE MENU ---------- */
+
+.note-menu {
+    position: relative;
+}
+
+.menu-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+.menu-dropdown {
+    position: absolute;
+    right: 0;
+    top: 25px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    width: 120px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    z-index: 10;
+}
+
+.menu-item {
+    padding: 10px 14px;
+    cursor: pointer;
+}
+
+.menu-item:hover {
+    background: #f2f2f2;
+}
+
+.menu-item.delete {
+    color: red;
+}
+
+.delete-btn {
+    background: #d93025;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.delete-btn:hover {
+    background: #b32318;
 }
