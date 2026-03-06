@@ -11,7 +11,7 @@ public class AuthController : ControllerBase
     private readonly IAuthService _authService;
 
     /// <summary>
-    /// Injects the authentication service into the controller.
+    ///     Injects the authentication service into the controller.
     /// </summary>
     /// <param name="authService">Service handling authentication logic</param>
     public AuthController(IAuthService authService)
@@ -20,12 +20,12 @@ public class AuthController : ControllerBase
     }
 
     /// <summary>
-    /// Registers a new user account.
+    ///     Registers a new user account.
     /// </summary>
     /// <param name="dto">Signup data transfer object containing user credentials</param>
     /// <returns>
-    /// 201 Created on success, along with a success message.  
-    /// 400 Bad Request if the model validation fails.
+    ///     201 Created on success, along with a success message.
+    ///     400 Bad Request if the model validation fails.
     /// </returns>
     [HttpPost("signup")]
     public async Task<IActionResult> Signup([FromBody] SignupDto dto)
@@ -38,41 +38,43 @@ public class AuthController : ControllerBase
         await _authService.SignupAsync(dto);
 
         // Return success status
-        return StatusCode(201, new {
+        return StatusCode(201, new
+        {
             message = "User created successfully."
         });
     }
 
     /// <summary>
-    /// Authenticates an existing user using username or email and password.
-    /// Returns a JWT token for subsequent requests if credentials are valid.
+    ///     Authenticates an existing user using username or email and password.
+    ///     Returns a JWT token for subsequent requests if credentials are valid.
     /// </summary>
     /// <param name="dto">Login data transfer object</param>
     /// <returns>
-    /// 200 OK with AuthResponseDto containing JWT token, expiration, user ID, email, and username.  
-    /// 400 Bad Request if model validation fails.  
-    /// 401 Unauthorized if credentials are invalid.
+    ///     200 OK with AuthResponseDto containing JWT token, expiration, user ID, email, and username.
+    ///     400 Bad Request if model validation fails.
+    ///     401 Unauthorized if credentials are invalid.
     /// </returns>
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginDto dto)
     {
         // Validate request payload
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
+        if (!ModelState.IsValid) return BadRequest(ModelState);
 
         // call login method
         var response = await _authService.LoginAsync(dto);
-        
+
+        // Creating the cookie
         Response.Cookies.Append("accessToken", response.Token, new CookieOptions
         {
-            HttpOnly = true,
+            HttpOnly = true, // prevents XSS scripts from stealing the token
             // Secure = true, uncomment when going into prod
             SameSite = SameSiteMode.Lax,
             Expires = response.Expiration
         });
 
         // Return authentication response
-        return StatusCode(200, new {
+        return StatusCode(200, new
+        {
             response.UserId,
             response.Email,
             response.UserName,
@@ -81,7 +83,7 @@ public class AuthController : ControllerBase
     }
 
     /// <summary>
-    /// Deletes jwt from cookie to end user session
+    ///     Deletes jwt from cookie to end user session
     /// </summary>
     /// <returns>Returns 200 status code</returns>
     [HttpPost("logout")]
@@ -90,7 +92,8 @@ public class AuthController : ControllerBase
         // delete jwt from cookie
         Response.Cookies.Delete("accessToken");
 
-        return StatusCode(200, new {
+        return StatusCode(200, new
+        {
             message = "Logged out successfully."
         });
     }

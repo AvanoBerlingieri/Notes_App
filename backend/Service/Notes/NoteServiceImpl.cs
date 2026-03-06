@@ -15,8 +15,10 @@ public class NoteService : INoteService
     }
 
     /// <summary>
-    ///     Creates a new note owned by the user
+    ///     Creates a new note and assigns the current user as the Owner.
     /// </summary>
+    /// <param name="userId">The ID of the user creating the note.</param>
+    /// <param name="dto">The title and initial content.</param>
     public async Task<NoteResponseDto> CreateNoteAsync(Guid userId, CreateNoteDto dto)
     {
         var note = new Note
@@ -42,8 +44,14 @@ public class NoteService : INoteService
     }
 
     /// <summary>
-    ///     Deletes a note if the user is the owner
+    ///     Deletes a note from the database.
+    ///     Only the note owner is allowed to perform this operation.
     /// </summary>
+    /// <param name="userId">The ID of the user attempting the deletion.</param>
+    /// <param name="noteId">The ID of the note to delete.</param>
+    /// <exception cref="Exception">
+    ///     Thrown if the note does not exist or if the user is not the owner.
+    /// </exception>
     public async Task DeleteNoteAsync(Guid userId, Guid noteId)
     {
         var note = await _context.Notes
@@ -59,8 +67,18 @@ public class NoteService : INoteService
     }
 
     /// <summary>
-    ///     Updates the note content and last modified date
+    ///     Updates the content of an existing note.
+    ///     The user must either be the owner or have the Editor role as a collaborator.
     /// </summary>
+    /// <param name="userId">The ID of the user attempting to edit the note.</param>
+    /// <param name="noteId">The ID of the note being edited.</param>
+    /// <param name="newContent">The updated content of the note.</param>
+    /// <returns>
+    ///     A DTO containing the updated note content.
+    /// </returns>
+    /// <exception cref="Exception">
+    ///     Thrown if the note does not exist or the user does not have edit permission.
+    /// </exception>
     public async Task<UpdateNoteDto> EditNoteAsync(Guid userId, Guid noteId, string newContent)
     {
         var note = await _context.Notes
@@ -88,8 +106,17 @@ public class NoteService : INoteService
     }
 
     /// <summary>
-    ///     Get a single note
+    ///     Retrieves a specific note if the user has permission to view it.
+    ///     Determines the user's role (Owner, Editor, Viewer) relative to the note.
     /// </summary>
+    /// <param name="userId">The ID of the requesting user.</param>
+    /// <param name="noteId">The ID of the note to retrieve.</param>
+    /// <returns>
+    ///     A DTO containing note details and the current user's role.
+    /// </returns>
+    /// <exception cref="Exception">
+    ///     Thrown if the note does not exist.
+    /// </exception>
     public async Task<NoteResponseDto> GetNoteAsync(Guid userId, Guid noteId)
     {
         var note = await _context.Notes
@@ -116,12 +143,18 @@ public class NoteService : INoteService
     }
 
     /// <summary>
-    ///     Get all notes the user has access to (owned + collaborations)
+    ///     Retrieves all notes accessible to the user.
+    ///     Includes notes owned by the user and notes shared with the user as a collaborator.
     /// </summary>
+    /// <param name="userId">The ID of the requesting user.</param>
+    /// <returns>
+    ///     A list of note DTOs containing note metadata and the user's role for each note.
+    /// </returns>
     public async Task<List<NoteResponseDto>> GetAllNotesAsync(Guid userId)
     {
         return await _context.Notes
-            .Where(n => n.OwnerId == userId || n.Collaborators.Any(c => c.UserId == userId))
+            .Where(n => n.OwnerId == userId || n.Collaborators
+                .Any(c => c.UserId == userId))
             .Select(n => new NoteResponseDto
             {
                 NoteId = n.NoteId,

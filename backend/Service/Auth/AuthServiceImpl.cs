@@ -1,23 +1,22 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.IdentityModel.Tokens;
-using NotesApp.Model;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
 using NotesApp.DTO.Auth;
+using NotesApp.Model;
 
 namespace NotesApp.Service.Auth;
 
 /// <summary>
-/// Handles authentication-related business logic such as
-/// user registration and login, and JWT generation.
+///     Handles authentication-related business logic such as user registration and login, and JWT generation.
 /// </summary>
 public class AuthService : IAuthService
 {
-    private readonly UserManager<User> _userManager;
-    private readonly SignInManager<User> _signInManager;
     private readonly IConfiguration _configuration;
+    private readonly SignInManager<User> _signInManager;
+    private readonly UserManager<User> _userManager;
 
     // Injects Identity managers and configuration settings.
     public AuthService(
@@ -31,10 +30,9 @@ public class AuthService : IAuthService
     }
 
     /// <summary>
-    /// Registers a new user in the system.
-    /// Does NOT automatically log the user in.
+    ///     Registers a new user. Performs uniqueness checks for username and email.
     /// </summary>
-    /// <param name="dto">Signup data transfer object</param>
+    /// <param name="dto">The signup data containing credentials and profile info.</param>
     public async Task SignupAsync(SignupDto dto)
     {
         // Check if username already exists
@@ -63,48 +61,37 @@ public class AuthService : IAuthService
         if (!result.Succeeded)
             throw new Exception(string.Join(", ", result.Errors.Select(e => e.Description)));
     }
-    
+
     /// <summary>
-    /// Authenticates a user using either username or email,
-    /// verifies password, and returns a JWT token if valid.
+    ///     Validates credentials and generates an authentication response.
     /// </summary>
-    /// <param name="dto">Login credentials</param>
-    /// <returns>Authentication response with JWT</returns>
+    /// <param name="dto">The login credentials (email/username + password).</param>
+    /// <returns>A DTO containing user info and the generated JWT.</returns>
     public async Task<AuthResponseDto> LoginAsync(LoginDto dto)
     {
         User? user;
 
         // Determine whether input is email or username
         if (IsValidEmail(dto.UserNameOrEmail))
-        {
             user = await _userManager.FindByEmailAsync(dto.UserNameOrEmail);
-        }
         else
-        {
             user = await _userManager.FindByNameAsync(dto.UserNameOrEmail);
-        }
 
         // Fail if user is not found
-        if (user == null)
-        {
-            throw new Exception("Invalid credentials.");
-        }
+        if (user == null) throw new Exception("Invalid credentials.");
 
         // Validate password using Identity
         var result = await _signInManager.CheckPasswordSignInAsync(user, dto.Password, false);
 
         // Fail if password incorrect
-        if (!result.Succeeded)
-        {
-            throw new Exception("Invalid credentials.");
-        }
+        if (!result.Succeeded) throw new Exception("Invalid credentials.");
 
         // Generate JWT token for authenticated user
         return GenerateAuthResponse(user);
     }
 
     /// <summary>
-    /// Generates a signed JWT token containing user claims.
+    ///     Generates a signed JWT token containing user claims.
     /// </summary>
     /// <param name="user">Authenticated user</param>
     /// <returns>Token string and expiration timestamp</returns>
@@ -112,18 +99,20 @@ public class AuthService : IAuthService
     {
         // Load JWT configuration from environment variables
         var jwtKey = Environment.GetEnvironmentVariable("JWT_KEY");
-        if (string.IsNullOrEmpty(jwtKey)) {throw new Exception("JWT_KEY is not configured.");}
+        if (string.IsNullOrEmpty(jwtKey)) throw new Exception("JWT_KEY is not configured.");
         var jwtIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER");
         var jwtAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE");
         var jwtDuration = int.Parse(Environment.GetEnvironmentVariable("JWT_DURATION_MINUTES"));
-        
+
         // Define claims for the JWT
         var claims = new List<Claim>
         {
-            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Name, user.UserName!),
-            new Claim(JwtRegisteredClaimNames.Email, user.Email!)
+            new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+            new(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new(ClaimTypes.Name, user.UserName!),
+            new(ClaimTypes.Email, user.Email!),
+            new(JwtRegisteredClaimNames.Name, user.UserName!),
+            new(JwtRegisteredClaimNames.Email, user.Email!)
         };
 
         // Create signing credentials
@@ -135,9 +124,9 @@ public class AuthService : IAuthService
 
         // Build the JWT token
         var token = new JwtSecurityToken(
-            issuer: jwtIssuer,
-            audience: jwtAudience,
-            claims: claims,
+            jwtIssuer,
+            jwtAudience,
+            claims,
             expires: expiration,
             signingCredentials: creds
         );
@@ -145,8 +134,11 @@ public class AuthService : IAuthService
         // Return serialized token and expiration
         return (new JwtSecurityTokenHandler().WriteToken(token), expiration);
     }
-    
-    // Builds the authentication response DTO including JWT and metadata.
+
+    /// <summary>
+    ///     Internal helper to construct the AuthResponseDto from a user entity.
+    /// </summary>
+    /// <param name="user">The authenticated user entity.</param>
     private AuthResponseDto GenerateAuthResponse(User user)
     {
         var tokenData = GenerateJwtToken(user);
@@ -161,7 +153,10 @@ public class AuthService : IAuthService
         };
     }
 
-    /// Validates whether a string is a properly formatted email address.
+    /// <summary>
+    ///     Validates if a string follows email formatting rules.
+    /// </summary>
+    /// <param name="input">The string to validate.</param>
     private bool IsValidEmail(string input)
     {
         return new EmailAddressAttribute().IsValid(input);
