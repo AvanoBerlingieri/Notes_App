@@ -12,8 +12,8 @@ export default function Home() {
     const [sort, setSort] = useState("recent");
     const [showModal, setShowModal] = useState(false);
     const [newNote, setNewNote] = useState({
-        title: "",
-        collaborators: ""
+        Title: "",
+        Content: "Test",
     });
 
     const navigate = useNavigate();
@@ -29,10 +29,10 @@ export default function Home() {
 
     const filteredNotes = notes
         .filter(note => {
-            if (filter === "owned")
+            if (filter === "0")
                 return note.CurrentUserRole === "Owner";
 
-            if (filter === "collab")
+            if (filter === "1" || "2")
                 return note.CurrentUserRole !== "Owner";
 
             return true;
@@ -51,16 +51,16 @@ export default function Home() {
         });
 
     async function handleCreateNote() {
-        if (!newNote.title) return;
+        if (!newNote.Title) return;
 
         try {
             await CreateNote({
-                title: newNote.title,
-                content: " "
+                Title: newNote.Title,
+                Content: newNote.Content
             });
 
             setShowModal(false);
-            setNewNote({ title: "", collaborators: "" }); // Reset form
+            setNewNote({ Title: "", Content: "Test" }); // Reset form
             loadNotes();
         } catch (err) {
             console.error("Failed to create note", err);
@@ -103,23 +103,21 @@ export default function Home() {
             </div>
 
             <div className="notes-grid">
-
                 {filteredNotes.map(note => (
-                    <div key={note.NoteId} className="note-card"
-                         onClick={() => navigate(`/note/${note.NoteId}`)}>
+                    <div key={note.noteId} className="note-card"
+                         onClick={() => navigate(`/note/${note.noteId}`)}>
 
                         <h3>{note.title}</h3>
 
                         <p>
-                            Last edited: {new Date(note.LastModified).toLocaleDateString()}
+                            Last edited: {new Date(note.lastModified).toLocaleDateString()}
                         </p>
 
                         <span className="role">
-                            {note.CurrentUserRole}
+                            {note.currentUserRole}
                         </span>
                     </div>
                 ))}
-
             </div>
             {showModal && (
                 <div className="modal-overlay">
@@ -129,17 +127,9 @@ export default function Home() {
 
                         <input
                             placeholder="Note title"
-                            value={newNote.title}
+                            value={newNote.Title}
                             onChange={(e) =>
-                                setNewNote({ ...newNote, title: e.target.value })
-                            }
-                        />
-
-                        <textarea
-                            placeholder="Add collaborators (comma separated emails)"
-                            value={newNote.collaborators}
-                            onChange={(e) =>
-                                setNewNote({ ...newNote, collaborators: e.target.value })
+                                setNewNote({ ...newNote, Title: e.target.value })
                             }
                         />
 

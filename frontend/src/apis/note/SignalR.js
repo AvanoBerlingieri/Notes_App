@@ -1,9 +1,8 @@
 import * as signalR from "@microsoft/signalr";
-const API = process.env.REACT_APP_API_URL;
 
 export const createNoteConnection = () => {
 
-    return new signalR.HubConnectionBuilder().withUrl(`${API}/noteHub`, {
+    return new signalR.HubConnectionBuilder().withUrl("http://localhost:8080/NoteHub", {
             withCredentials: true
         })
         .withAutomaticReconnect()
