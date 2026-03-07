@@ -164,6 +164,8 @@ public class AuthController : ControllerBase
     ///     Deletes the user
     /// </summary>
     /// <returns>Returns 204 (No Content) if the user was successfully deleted</returns>
+    [Authorize]
+    [HttpDelete("user")]
     public async Task<IActionResult> DeleteUser()
     {
         // Grab userId from the claims in the JWT
