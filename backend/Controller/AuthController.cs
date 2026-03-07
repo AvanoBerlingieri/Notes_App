@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using NotesApp.DTO.Auth;
 using NotesApp.Service.Auth;
 
@@ -85,7 +87,8 @@ public class AuthController : ControllerBase
     /// <summary>
     ///     Deletes jwt from cookie to end user session
     /// </summary>
-    /// <returns>Returns 200 status code</returns>
+    /// <returns>Returns 204 (No Content)</returns>
+    [Authorize]
     [HttpPost("logout")]
     public async Task<IActionResult> Logout()
     {
@@ -96,5 +99,93 @@ public class AuthController : ControllerBase
         {
             message = "Logged out successfully."
         });
+    }
+
+    /// <summary>
+    ///     Retrieves the currently authenticated user's profile information.
+    /// </summary>
+    /// <returns>Returns the user's account information</returns>
+    [Authorize]
+    [HttpGet("user")]
+    public async Task<IActionResult> GetUser()
+    {
+        // Grab userId from the claims in the JWT
+        var userId = GetUserId();
+        if (userId == Guid.Empty) return Unauthorized();
+
+        // Call the auth service to retrieve the user data
+        var user = await _authService.GetUserAsync(userId);
+
+        // Return the user information with 200 code (ok)
+        return StatusCode(200, user);
+    }
+
+    /// <summary>
+    ///     Updates the current user's profile information
+    /// </summary>
+    /// <param name="dto">DTO containing the updated user info</param>
+    /// <returns>Returns 204 (No Content) if the update succeeds</returns>
+    [Authorize]
+    [HttpPut("user")]
+    public async Task<IActionResult> UpdateUser(UpdateUserDto dto)
+    {
+        // Grab userId from the claims in the JWT
+        var userId = GetUserId();
+        if (userId == Guid.Empty) return Unauthorized();
+
+        // Call the auth service to update the user's account info
+        await _authService.UpdateUserAsync(userId, dto);
+
+        // Return 204 (No Content)
+        return StatusCode(204);
+    }
+
+    /// <summary>
+    ///     Changes the password for the current user
+    /// </summary>
+    /// <param name="dto">DTO containing the current password and the new password</param>
+    /// <returns>Returns 204 (No Content) if the password change succeeds</returns>
+    [Authorize]
+    [HttpPatch("user")]
+    public async Task<IActionResult> ChangePassword(ChangePasswordDto dto)
+    {
+        // Grab userId from the claims in the JWT
+        var userId = GetUserId();
+        if (userId == Guid.Empty) return Unauthorized();
+
+        // Call the auth service to update the user's password
+        await _authService.ChangePasswordAsync(userId, dto);
+
+        // Return 204 (No Content) if password successfully changed
+        return StatusCode(204);
+    }
+
+    /// <summary>
+    ///     Deletes the user
+    /// </summary>
+    /// <returns>Returns 204 (No Content) if the user was successfully deleted</returns>
+    public async Task<IActionResult> DeleteUser()
+    {
+        // Grab userId from the claims in the JWT
+        var userId = GetUserId();
+        if (userId == Guid.Empty) return Unauthorized();
+
+        // Call the auth service to delete the user
+        await _authService.DeleteUserAsync(userId);
+
+        // Return 204 (No Content) if user deleted successfully
+        return StatusCode(204, new
+        {
+            message = "User deleted successfully."
+        });
+    }
+
+    /// <summary>
+    ///     Helper function to grab userId from jwt claims
+    /// </summary>
+    /// <returns>User id</returns>
+    private Guid GetUserId()
+    {
+        return Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
     }
 }

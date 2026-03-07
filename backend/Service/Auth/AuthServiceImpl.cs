@@ -78,7 +78,7 @@ public class AuthService : IAuthService
             user = await _userManager.FindByNameAsync(dto.UserNameOrEmail);
 
         // Fail if user is not found
-        if (user == null) throw new Exception("Invalid credentials.");
+        if (user == null) {throw new Exception("Invalid credentials.");}
 
         // Validate password using Identity
         var result = await _signInManager.CheckPasswordSignInAsync(user, dto.Password, false);
@@ -88,6 +88,118 @@ public class AuthService : IAuthService
 
         // Generate JWT token for authenticated user
         return GenerateAuthResponse(user);
+    }
+
+    /// <summary>
+    /// Retrieves the account information for a specific user.
+    /// </summary>
+    /// <param name="userId">The unique id of the user</param>
+    /// <returns>Returns a DTO containing the user's username, email, first name, and last name</returns>
+    /// <exception cref="Exception">Thrown if a user with the specified ID cannot be found</exception>
+    public async Task<UserDto> GetUserAsync(Guid userId)
+    {
+        // retrieve the user using the provided user ID
+        var user = await _userManager.FindByIdAsync(userId.ToString());
+
+        // If the user does not exist, throw an exception
+        if (user == null) { throw new Exception("User not found."); }
+
+        // Map the user object to a UserDto that can be returned to the client
+        return new UserDto
+        {
+            UserName = user.UserName!,
+            Email = user.Email!,
+            FirstName = user.FirstName,
+            LastName = user.LastName
+        };
+    }
+
+    /// <summary>
+    /// Updates the profile information for an existing user.
+    /// </summary>
+    /// <param name="userId">The unique id of the user</param>
+    /// <param name="dto">DTO containing the updated user information</param>
+    /// <returns>DTO containing the updated user information</returns>
+    /// <exception cref="Exception">
+    /// Thrown if the email format is invalid, the user cannot be found,
+    /// or the update operation fails.
+    /// </exception>
+    public async Task<UpdateUserDto> UpdateUserAsync(Guid userId, UpdateUserDto dto)
+    {
+        // Validate that the email provided in the DTO is in a valid format
+        if (!IsValidEmail(dto.Email!)) { throw new Exception("Invalid email format!"); }
+
+        // Retrieve the user
+        var user = await _userManager.FindByIdAsync(userId.ToString());
+
+        // If the user does not exist, throw an exception
+        if (user == null) { throw new Exception("User not found."); }
+
+        // Update the user's properties with the values provided in the DTO
+        user.Email = dto.Email;
+        user.FirstName = dto.FirstName;
+        user.LastName = dto.LastName;
+
+        // update user information in the database
+        var result = await _userManager.UpdateAsync(user);
+
+        // If the update fails, throw an exception
+        if (!result.Succeeded) { throw new Exception("Failed to update user."); }
+
+        // Return the updated user information as a DTO
+        var updatedUser = new UpdateUserDto
+        {
+            Email = user.Email!,
+            FirstName = user.FirstName,
+            LastName = user.LastName
+        };
+
+        return updatedUser;
+    }
+    
+    /// <summary>
+    /// Changes the password for a specific user.
+    /// </summary>
+    /// <param name="userId">The unique id of the user</param>
+    /// <param name="dto">DTO containing the user's current password and the new password.</param>
+    /// <exception cref="Exception">Thrown if the user cannot be found or if the password change fails</exception>
+    public async Task ChangePasswordAsync(Guid userId, ChangePasswordDto dto)
+    {
+        // Retrieve the user
+        var user = await _userManager.FindByIdAsync(userId.ToString());
+
+        // Check if the user exists
+        if (user == null) { throw new Exception("User not found."); }
+
+        // Attempt to change the password
+        var result = await _userManager.ChangePasswordAsync(
+            user,
+            dto.CurrentPassword,
+            dto.NewPassword
+        );
+
+        // If the password change fails, throw an exception
+        if (!result.Succeeded) { throw new Exception("Password change failed."); }
+    }
+
+    /// <summary>
+    /// Delete a user account from the database.
+    /// </summary>
+    /// <param name="userId">The unique id of the user</param>
+    /// <exception cref="Exception">Thrown if the user cannot be found or the delete operation fails</exception>
+    public async Task DeleteUserAsync(Guid userId)
+    {
+        // Find the user
+        var user = await _userManager.FindByIdAsync(userId.ToString());
+
+        // If the user does not exist, throw an exception
+        if (user == null) { throw new Exception("User not found."); }
+
+        // delete the user account
+        var result = await _userManager.DeleteAsync(user);
+
+        // If the delete operation fails, throw an exception
+        if (!result.Succeeded) { throw new Exception("Failed to delete user."); }
     }
 
     /// <summary>
@@ -102,17 +214,13 @@ public class AuthService : IAuthService
         if (string.IsNullOrEmpty(jwtKey)) throw new Exception("JWT_KEY is not configured.");
         var jwtIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER");
         var jwtAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE");
-        var jwtDuration = int.Parse(Environment.GetEnvironmentVariable("JWT_DURATION_MINUTES"));
+        var jwtDuration = int.Parse(Environment.GetEnvironmentVariable("JWT_DURATION_MINUTES")!);
 
         // Define claims for the JWT
         var claims = new List<Claim>
         {
             new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
             new(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new(ClaimTypes.Name, user.UserName!),
-            new(ClaimTypes.Email, user.Email!),
-            new(JwtRegisteredClaimNames.Name, user.UserName!),
-            new(JwtRegisteredClaimNames.Email, user.Email!)
         };
 
         // Create signing credentials

@@ -16,6 +16,4 @@ public class NoteResponseDto
     [Required] public required DateTime DateCreated { get; set; }
 
     [Required] public required DateTime LastModified { get; set; }
-
-    [Required] public required NoteRole CurrentUserRole { get; set; }
 }

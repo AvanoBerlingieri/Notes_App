@@ -38,8 +38,7 @@ public class NoteService : INoteService
             Content = note.Content,
             OwnerId = note.OwnerId,
             DateCreated = note.DateCreated,
-            LastModified = note.LastModified,
-            CurrentUserRole = NoteRole.Owner
+            LastModified = note.LastModified
         };
     }
 
@@ -85,13 +84,13 @@ public class NoteService : INoteService
             .Include(n => n.Collaborators)
             .FirstOrDefaultAsync(n => n.NoteId == noteId);
 
-        if (note == null) {throw new Exception("Note not found.");}
+        if (note == null) throw new Exception("Note not found.");
 
         // Check if user has editing rights
         var canEdit = note.OwnerId == userId ||
                       note.Collaborators.Any(c => c.UserId == userId && c.Role == NoteRole.Editor);
 
-        if (!canEdit) {throw new Exception("You do not have permission to edit this note.");}
+        if (!canEdit) throw new Exception("You do not have permission to edit this note.");
 
         note.Title = updatedTitle;
         note.LastModified = DateTime.UtcNow;
@@ -101,7 +100,7 @@ public class NoteService : INoteService
         // Return updated note
         return new UpdateNoteTitleDto
         {
-            Title =  updatedTitle,
+            Title = updatedTitle
         };
     }
 
@@ -114,21 +113,14 @@ public class NoteService : INoteService
     /// <returns>
     ///     A DTO containing note details and the current user's role.
     /// </returns>
-    /// <exception cref="Exception">
-    ///     Thrown if the note does not exist.
-    /// </exception>
+    /// <exception cref="Exception">Thrown if the note does not exist.</exception>
     public async Task<NoteResponseDto> GetNoteAsync(Guid userId, Guid noteId)
     {
         var note = await _context.Notes
             .Include(n => n.Collaborators)
             .FirstOrDefaultAsync(n => n.NoteId == noteId);
 
-        if (note == null)
-            throw new Exception("Note not found.");
-
-        var role = note.OwnerId == userId
-            ? NoteRole.Owner
-            : note.Collaborators.FirstOrDefault(c => c.UserId == userId)?.Role ?? NoteRole.Viewer;
+        if (note == null) throw new Exception("Note not found.");
 
         return new NoteResponseDto
         {
@@ -137,8 +129,7 @@ public class NoteService : INoteService
             Content = note.Content,
             OwnerId = note.OwnerId,
             DateCreated = note.DateCreated,
-            LastModified = note.LastModified,
-            CurrentUserRole = role
+            LastModified = note.LastModified
         };
     }
 
@@ -162,10 +153,7 @@ public class NoteService : INoteService
                 Content = n.Content,
                 OwnerId = n.OwnerId,
                 DateCreated = n.DateCreated,
-                LastModified = n.LastModified,
-                CurrentUserRole = n.OwnerId == userId
-                    ? NoteRole.Owner
-                    : n.Collaborators.First(c => c.UserId == userId).Role
+                LastModified = n.LastModified
             }).ToListAsync();
     }
 }
