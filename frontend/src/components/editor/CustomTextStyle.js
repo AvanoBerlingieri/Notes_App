@@ -1,4 +1,4 @@
-import { TextStyle } from "@tiptap/extension-text-style";
+import {TextStyle} from "@tiptap/extension-text-style";
 
 export const CustomTextStyle = TextStyle.extend({
     addGlobalAttributes() {
@@ -9,7 +9,7 @@ export const CustomTextStyle = TextStyle.extend({
                     fontSize: {
                         default: null,
                         parseHTML: el => el.style.fontSize || null,
-                        renderHTML: attrs => attrs.fontSize ? { style: `font-size: ${attrs.fontSize}` } : {},
+                        renderHTML: attrs => attrs.fontSize ? {style: `font-size: ${attrs.fontSize}`} : {},
                     },
                 },
             },

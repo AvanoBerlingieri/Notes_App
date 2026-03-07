@@ -8,28 +8,23 @@ export default function CreateNoteModel({show, newNote, setNewNote, onCancel, on
 
                 <h2>Create New Note</h2>
 
-                <input
-                    placeholder="Note title"
-                    value={newNote.Title}
-                    onChange={(e) =>
-                        setNewNote({...newNote, Title: e.target.value})
-                    }
+                <input placeholder="Note title"
+                       value={newNote.Title}
+                       onChange={(e) =>
+                           setNewNote({...newNote, Title: e.target.value})
+                       }
                 />
 
                 <div className="modal-buttons">
 
-                    <button
-                        className="cancel-btn"
-                        onClick={onCancel}
-                    >
-                        Cancel
+                    <button className="cancel-btn"
+                            onClick={onCancel}
+                    >Cancel
                     </button>
 
-                    <button
-                        className="create-btn"
-                        onClick={onCreate}
-                    >
-                        Create
+                    <button className="create-btn"
+                            onClick={onCreate}
+                    >Create
                     </button>
 
                 </div>

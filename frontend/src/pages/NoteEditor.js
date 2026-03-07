@@ -1,6 +1,6 @@
-import { useEffect, useState, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { useEditor, EditorContent } from "@tiptap/react";
+import {useEffect, useState, useRef} from "react";
+import {useParams, useNavigate} from "react-router-dom";
+import {useEditor, EditorContent} from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
 import Color from "@tiptap/extension-color";
@@ -9,22 +9,22 @@ import FontFamily from "@tiptap/extension-font-family";
 import TextAlign from "@tiptap/extension-text-align";
 import TaskList from "@tiptap/extension-task-list";
 import TaskItem from "@tiptap/extension-task-item";
-import { CustomTextStyle } from "../components/editor/CustomTextStyle";
+import {CustomTextStyle} from "../components/editor/CustomTextStyle";
 
 import EditorToolbar from "../components/editor/EditorToolbar";
-import { createNoteConnection } from "../apis/note/SignalR";
-import { GetOneNote } from "../apis/note/GetOneNote";
+import {createNoteConnection} from "../apis/note/SignalR";
+import {GetOneNote} from "../apis/note/GetOneNote";
 
 import "../pages/css/NoteEditor.css";
-import { IoSettingsSharp } from "react-icons/io5";
-import { CgProfile } from "react-icons/cg";
-import { FaArrowLeft } from "react-icons/fa";
+import {IoSettingsSharp} from "react-icons/io5";
+import {CgProfile} from "react-icons/cg";
+import {FaArrowLeft} from "react-icons/fa";
 
 export default function NoteEditor() {
-    const { noteId } = useParams();
+    const {noteId} = useParams();
     const navigate = useNavigate();
 
-   // const [users, setUsers] = useState([]);
+    // const [users, setUsers] = useState([]);
     const [title, setTitle] = useState("");
     const [isConnected, setIsConnected] = useState(false);
     const [saveStatus, setSaveStatus] = useState("Saved");
@@ -40,12 +40,12 @@ export default function NoteEditor() {
             Color,
             Highlight,
             FontFamily,
-            TextAlign.configure({ types: ["paragraph", "heading"] }),
+            TextAlign.configure({types: ["paragraph", "heading"]}),
             TaskList,
-            TaskItem.configure({ nested: true }),
+            TaskItem.configure({nested: true}),
         ],
         content: "",
-        onUpdate: ({ editor }) => {
+        onUpdate: ({editor}) => {
             const html = editor.getHTML();
             setSaveStatus("Typing...");
             if (timeoutRef.current) clearTimeout(timeoutRef.current);
@@ -98,14 +98,16 @@ export default function NoteEditor() {
         }
 
         start();
-        return () => { if (conn) conn.stop(); };
+        return () => {
+            if (conn) conn.stop();
+        };
     }, [noteId, editor]);
 
     return (
         <div className="note-page">
             <div className="topbar">
                 <div className="topbar-left">
-                    <button className="back-btn" onClick={() => navigate("/home")}><FaArrowLeft /></button>
+                    <button className="back-btn" onClick={() => navigate("/home")}><FaArrowLeft/></button>
                     <h2 className="app-title">{title}</h2>
                     <span className="save-indicator">{saveStatus}</span>
                 </div>
@@ -113,14 +115,14 @@ export default function NoteEditor() {
                 <div className="topbar-right">
                     <div className="user-info" onClick={() => navigate("/profile")}>
                         <span className="username">Username</span>
-                        <span className="profile-icon"><CgProfile /></span>
+                        <span className="profile-icon"><CgProfile/></span>
                     </div>
                     <span className="settings-icon" onClick={() => navigate("/settings")}><IoSettingsSharp/></span>
                 </div>
             </div>
 
-            <EditorToolbar editor={editor} />
-            <div className="editor-container"><EditorContent editor={editor} /></div>
+            <EditorToolbar editor={editor}/>
+            <div className="editor-container"><EditorContent editor={editor}/></div>
         </div>
     );
 }

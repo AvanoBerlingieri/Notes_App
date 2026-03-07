@@ -8,22 +8,19 @@ export default function RenameNoteModel({show, renameTitle, setRenameTitle, onCa
 
                 <h2>Rename Note</h2>
 
-                <input
-                    value={renameTitle}
-                    onChange={(e) => setRenameTitle(e.target.value)}
+                <input value={renameTitle}
+                       onChange={(e) => setRenameTitle(e.target.value)}
                 />
 
                 <div className="modal-buttons">
 
-                    <button
-                        className="cancel-btn"
-                        onClick={onCancel}
+                    <button className="cancel-btn"
+                            onClick={onCancel}
                     >Cancel
                     </button>
 
-                    <button
-                        className="create-btn"
-                        onClick={onSave}
+                    <button className="create-btn"
+                            onClick={onSave}
                     >Save
                     </button>
 
