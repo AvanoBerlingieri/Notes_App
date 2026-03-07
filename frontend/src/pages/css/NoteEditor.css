@@ -1,0 +1,134 @@
+.note-page {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background: #f5f6f8;
+}
+
+/* TOPBAR */
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 75px;
+    padding: 0 25px;
+    background: #cfe8ff;
+    border-bottom: 1px solid lightgrey;
+    z-index: 10;
+}
+
+.topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.back-btn {
+    margin-top: 8px;
+    border: none;
+    background: transparent;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.app-title {
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.save-indicator {
+    margin-top: 8px;
+    font-size: 14px;
+    color: grey;
+}
+
+/* USER INFO */
+.topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.profile-icon {
+    font-size: 22px;
+}
+
+.settings-icon {
+    cursor: pointer;
+    font-size: 20px;
+}
+
+/* TOOLBAR */
+.editor-toolbar {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    margin-top: 0;
+
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 10px 20px;
+
+    background: white;
+    border-bottom: 1px solid lightgrey;
+}
+
+.toolbar-group {
+    display: flex;
+    gap: 10px;
+    padding-right: 10px;
+    border-right: 1px solid lightgrey;
+}
+
+.toolbar-group:last-child {
+    border-right: none;
+}
+
+.editor-toolbar button,
+.editor-toolbar select,
+.editor-toolbar input[type="color"] {
+    cursor: pointer;
+    font-size: 15px;
+    border-radius: 6px;
+    padding: 6px 10px;
+    border: none;
+    background: transparent;
+}
+
+.editor-toolbar button.active {
+    background: #e8f0fe;
+    color: #1a73e8;
+}
+
+/* EDITOR CANVAS */
+.editor-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    padding: 50px 20px;
+}
+
+.ProseMirror {
+    width: 850px;
+    min-height: 1100px;
+    background: white;
+    padding: 60px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 8px 24px rgba(0,0,0,0.05);
+    outline: none;
+    line-height: 1.6;
+}
+
+/* TEXT STYLES */
+.ProseMirror h1 { font-size: 32px; margin-bottom: 16px; }
+.ProseMirror h2 { font-size: 24px; margin-bottom: 12px; }
+.ProseMirror p { margin-bottom: 10px; }
+.ProseMirror ul, .ProseMirror ol { padding-left: 20px; }
