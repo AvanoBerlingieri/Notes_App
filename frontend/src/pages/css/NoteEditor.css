@@ -5,66 +5,6 @@
     background: #f5f6f8;
 }
 
-/* TOPBAR */
-.topbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    height: 75px;
-    padding: 0 25px;
-    background: #cfe8ff;
-    border-bottom: 1px solid lightgrey;
-    z-index: 10;
-}
-
-.topbar-left {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-.back-btn {
-    margin-top: 8px;
-    border: none;
-    background: transparent;
-    font-size: 20px;
-    cursor: pointer;
-}
-
-.app-title {
-    font-size: 24px;
-    font-weight: 600;
-}
-
-.save-indicator {
-    margin-top: 8px;
-    font-size: 14px;
-    color: grey;
-}
-
-/* USER INFO */
-.topbar-right {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-.user-info {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-}
-
-.profile-icon {
-    font-size: 22px;
-}
-
-.settings-icon {
-    cursor: pointer;
-    font-size: 20px;
-}
-
 /* TOOLBAR */
 .editor-toolbar {
     position: sticky;

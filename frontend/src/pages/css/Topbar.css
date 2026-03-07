@@ -1,0 +1,66 @@
+.topbar {
+    background: #cfe8ff;
+    height: 75px;
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    align-items: center;
+    padding: 0 40px;
+}
+
+.topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.app-title {
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.topbar-center {
+    display: flex;
+    justify-content: center;
+}
+
+.topbar-right {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 15px;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.username {
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.profile-icon {
+    font-size: 26px;
+}
+
+.settings-icon {
+    font-size: 26px;
+    cursor: pointer;
+}
+
+.save-indicator {
+    margin-top: 8px;
+    font-size: 14px;
+    color: grey;
+}
+
+.back-btn {
+    margin-top: 8px;
+    border: none;
+    background: transparent;
+    font-size: 20px;
+    cursor: pointer;
+}

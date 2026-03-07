@@ -1,5 +1,5 @@
 import {useEffect, useState, useRef} from "react";
-import {useParams, useNavigate} from "react-router-dom";
+import {useParams} from "react-router-dom";
 import {useEditor, EditorContent} from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
@@ -11,18 +11,15 @@ import TaskList from "@tiptap/extension-task-list";
 import TaskItem from "@tiptap/extension-task-item";
 import {CustomTextStyle} from "../components/editor/CustomTextStyle";
 
+import Topbar from "../components/layout/Topbar";
 import EditorToolbar from "../components/editor/EditorToolbar";
 import {createNoteConnection} from "../apis/note/SignalR";
 import {GetOneNote} from "../apis/note/GetOneNote";
 
 import "../pages/css/NoteEditor.css";
-import {IoSettingsSharp} from "react-icons/io5";
-import {CgProfile} from "react-icons/cg";
-import {FaArrowLeft} from "react-icons/fa";
 
 export default function NoteEditor() {
     const {noteId} = useParams();
-    const navigate = useNavigate();
 
     // const [users, setUsers] = useState([]);
     const [title, setTitle] = useState("");
@@ -105,21 +102,14 @@ export default function NoteEditor() {
 
     return (
         <div className="note-page">
-            <div className="topbar">
-                <div className="topbar-left">
-                    <button className="back-btn" onClick={() => navigate("/home")}><FaArrowLeft/></button>
-                    <h2 className="app-title">{title}</h2>
-                    <span className="save-indicator">{saveStatus}</span>
-                </div>
-                <div className="topbar-center"></div>
-                <div className="topbar-right">
-                    <div className="user-info" onClick={() => navigate("/profile")}>
-                        <span className="username">Username</span>
-                        <span className="profile-icon"><CgProfile/></span>
-                    </div>
-                    <span className="settings-icon" onClick={() => navigate("/settings")}><IoSettingsSharp/></span>
-                </div>
-            </div>
+
+            <Topbar
+                title={title}
+                username={"Avano"}
+                saveStatus={saveStatus}
+                showBack={true}
+                showSearch={false}
+            />
 
             <EditorToolbar editor={editor}/>
             <div className="editor-container"><EditorContent editor={editor}/></div>

@@ -3,7 +3,6 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Home from "./pages/Home";
 import Profile from "./pages/Profile";
-import Settings from "./pages/Settings";
 import NoteEditor from "./pages/NoteEditor";
 
 export default function App() {
@@ -14,7 +13,6 @@ export default function App() {
             <Route path="/signup" element={<Signup/>}/>
             <Route path="/home" element={<Home/>}/>
             <Route path="/profile" element={<Profile/>}/>
-            <Route path="/settings" element={<Settings/>}/>
             <Route path="/note/:noteId" element={<NoteEditor/>}/>          </Routes>
         </BrowserRouter>
   );

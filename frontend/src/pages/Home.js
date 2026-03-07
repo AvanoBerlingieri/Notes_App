@@ -8,16 +8,13 @@ import CreateNoteModel from "../components/models/CreateNoteModel";
 import RenameNoteModel from "../components/models/RenameNoteModel";
 import DeleteNoteModel from "../components/models/DeleteNoteModel";
 
+import Topbar from "../components/layout/Topbar";
 import NoteCard from "../components/notes/NoteCard";
 import NoteRow from "../components/notes/NoteRow";
 
 import {useNavigate} from "react-router-dom";
 
 import "./css/Home.css";
-
-import {FiSearch} from "react-icons/fi";
-import {IoSettingsSharp} from "react-icons/io5";
-import {CgProfile} from "react-icons/cg";
 
 export default function Home() {
 
@@ -84,48 +81,17 @@ export default function Home() {
 
     return (
         <div className="home-container">
-            <div className="topbar">
 
-                <div className="topbar-left">
-                    <h2 className="app-title">Notes App</h2>
-                </div>
-
-                <div className="topbar-center">
-                    <div className="search-container">
-
-                        <input
-                            className="search-bar"
-                            placeholder="Search notes..."
-                            value={searchInput}
-                            onChange={(e) => setSearchInput(e.target.value)}
-                        />
-
-                        <button
-                            className="search-btn"
-                            onClick={() => setSearch(searchInput)}
-                        ><FiSearch/>
-                        </button>
-
-                    </div>
-                </div>
-
-                <div className="topbar-right">
-
-                    <div
-                        className="user-info"
-                        onClick={() => navigate("/profile")}
-                    >
-                        <span className="username">Username</span>
-                        <span className="profile-icon"><CgProfile/></span>
-                    </div>
-
-                    <span className="settings-icon"
-                          onClick={() => navigate("/settings")}
-                    ><IoSettingsSharp/>
-                    </span>
-
-                </div>
-            </div>
+            <Topbar
+                title="Notes App"
+                username={"Avano"}
+                showBack={false}
+                saveStatus={false}
+                showSearch={true}
+                searchInput={searchInput}
+                setSearchInput={setSearchInput}
+                setSearch={setSearch}
+            />
 
             <div className="content">
                 <div className="toolbar">
@@ -165,7 +131,7 @@ export default function Home() {
 
                     {filteredNotes.map(note => {
 
-                        const props = {
+                        const notes = {
                             note,
                             openMenu,
                             setOpenMenu,
@@ -184,8 +150,8 @@ export default function Home() {
                         };
 
                         return viewMode === "grid"
-                            ? <NoteCard key={note.noteId} {...props}/>
-                            : <NoteRow key={note.noteId} {...props}/>
+                            ? <NoteCard key={note.noteId} {...notes}/>
+                            : <NoteRow key={note.noteId} {...notes}/>
 
                     })}
                 </div>
