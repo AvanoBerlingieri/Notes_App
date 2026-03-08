@@ -1,0 +1,140 @@
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.4);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    animation: fadeIn 0.18s ease-out;
+}
+
+.modal {
+    background: white;
+    padding: 30px;
+    width: 400px;
+    border-radius: 10px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+
+    animation: scaleIn 0.18s ease-out;
+}
+
+.modal input {
+    padding: 10px;
+    font-size: 14px;
+}
+
+/* BUTTONS */
+
+.modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.cancel-btn {
+    background: #ddd;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.create-btn {
+    background: #1a73e8;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.create-btn:hover {
+    background: #1666c1;
+}
+
+.create-btn.disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+.delete-btn {
+    background: #d93025;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.delete-btn:hover {
+    background: #b32318;
+}
+
+/* PASSWORD STRENGTH */
+
+.password-strength {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 5px;
+}
+
+.strength-bar {
+    height: 6px;
+    flex: 1;
+    border-radius: 5px;
+    background: lightgray;
+    transition: 0.3s;
+}
+
+.strength-bar.weak {
+    background: #d93025;
+}
+
+.strength-bar.medium {
+    background: #f9ab00;
+}
+
+.strength-bar.strong {
+    background: #34a853;
+}
+
+.password-hint {
+    font-size: 12px;
+    color: gray;
+}
+
+.password-error {
+    font-size: 12px;
+    color: #d93025;
+}
+
+/* ANIMATIONS */
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
