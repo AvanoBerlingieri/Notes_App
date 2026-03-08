@@ -3,56 +3,191 @@
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background-color: dodgerblue;
+    padding: 0 20px;
+    background: linear-gradient(135deg, #1e90ff, #00bfff);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .signup-card {
-    justify-content: center;
-    padding: 50px;
+    padding: 40px 40px;
     border-radius: 20px;
-    border: 2px solid;
-    width: 400px;
-    text-align: center;
-    background-color: white;
+    border: 1px solid lightgray;
+    width: 420px;
+    max-width: 95%;
+    background-color: #fff;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .signup-card h2 {
-    font-size: 40px;
-    color: royalblue;
+    font-size: 34px;
+    color: dodgerblue;
+    margin-bottom: 20px;
 }
 
-.signup-card input {
-    width: 90%;
-    padding: 14px;
-    margin: 10px 0;
-    border-radius: 8px;
-    border: 1px solid grey;
-    font-size: 16px;
+.signup-subtitle {
+    font-size: 14px;
+    color: grey;
+    margin-bottom: 20px;
 }
 
-.signup-card button {
-    width: 97%;
-    padding: 14px;
-    margin-top: 10px;
-    border-radius: 8px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: all 0.3s ease;
+.signup-card form {
+    width: 100%;
 }
 
-.signup-card .signupBtn:hover
-{
-    background: darkgreen !important;
+/* INPUT FIELDS */
+.input-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
 }
 
-.signup-card .message {
+.input-group input {
+    flex: 1;
+    padding: 12px 16px;
+    border-radius: 10px;
+    border: 1px solid lightgrey;
+    font-size: 14px;
+    outline: none;
+    transition: border 0.2s ease, box-shadow 0.2s ease;
+}
+
+.input-group input:focus {
+    border-color: #1e90ff;
+    box-shadow: 0 0 5px rgba(30,144,255,0.25);
+}
+
+.required {
     color: red;
+    font-weight: bold;
+    font-size: 18px;
 }
 
-.signup-card .backBtn {
-    background-color: dodgerblue !important;
+/* PASSWORD STRENGTH */
+.password-strength {
+    width: 95%;
+    padding-left: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
-.signup-card .backBtn:hover {
-    background: blue !important;
+.strength-bar {
+    flex: 1;
+    height: 6px;
+    border-radius: 4px;
+    background-color: #eee;
+}
+
+.strength-bar.weak {
+    background-color: #ff4d4f;
+}
+
+.strength-bar.medium {
+    background-color: #faad14;
+}
+
+.strength-bar.strong {
+    background-color: #52c41a;
+}
+
+.password-strength span {
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.password-rules p {
+    font-size: 12px;
+    color: #777;
+    margin: 2px 0;
+}
+
+.password-rules .invalid {
+    color: red;
+    padding-left: 20px;
+}
+.password-rules .valid {
+    color: #28a745;
+    padding-left: 20px;
+}
+
+.password-error {
+    color: red;
+    font-size: 14px;
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+/* PASSWORD VISIBILITY*/
+.password-group {
+    position: relative;
+}
+
+.eye-icon {
+    position: absolute;
+    right: 15px;
+    cursor: pointer;
+    color: #777;
+}
+
+/* BUTTONS */
+.signup-card button {
+    width: 100%;
+    padding: 14px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    border: none;
+    transition: all 0.25s ease;
+}
+
+.signupBtn {
+    background-color: #28a745;
+    color: white;
+    margin-top: 8px;
+    margin-left: 16px;
+    width: 96%!important;
+}
+
+.signupBtn:hover:enabled {
+    background-color: #218838;
+}
+
+.signupBtn:disabled {
+    background-color: #9ed7aa;
+    cursor: not-allowed;
+}
+
+.backBtn {
+    background-color: #1e90ff;
+    color: white;
+    margin-top: 10px;
+}
+
+.backBtn:hover {
+    background-color: #187bcd;
+}
+
+/* LOGIN */
+.login-link {
+    margin-top: 4px;
+    font-size: 14px;
+    color: #555;
+    margin-left: 12px;
+}
+
+.login-link p {
+    margin-bottom: 4px;
+}
+
+/* ERROR MESSAGE */
+.message {
+    color: #ff4d4f;
+    margin-top: 12px;
+    font-size: 14px;
+    margin-left: 14px;
 }
