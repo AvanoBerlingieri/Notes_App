@@ -1,27 +1,29 @@
+import {useState} from "react";
+import {FaEye, FaEyeSlash} from "react-icons/fa";
+import {getPasswordStrength, getPasswordRules, isPasswordValid} from "../../password/PasswordFunctions"
 import Modal from "../Modal";
 import "../Modal.css";
 
-export default function ChangePasswordModal({show, password, setPassword, onCancel, onSave}) {
+export default function ChangePasswordModal({
+                                                show,
+                                                password,
+                                                setPassword,
+                                                onCancel,
+                                                onSave
+                                            }) {
 
-    // Password strength calculation
-    function getPasswordStrength(pass) {
-        let score = 0;
-        if (pass.length >= 8) score++;
-        if (/[0-9]/.test(pass)) score++;
-        if (/[!@#$%^&*(),.?":{}|<>]/.test(pass)) score++;
-        if (/[A-Z]/.test(pass)) score++;
-        if (score <= 1) return {label: "Weak", class: "weak"};
-        if (score === 2 || score === 3) return {label: "Medium", class: "medium"};
-        return {label: "Strong", class: "strong"};
-    }
+    const [showCurrent, setShowCurrent] = useState(false);
+    const [showNew, setShowNew] = useState(false);
+    const [showConfirm, setShowConfirm] = useState(false);
+    const newPass = password?.newPassword || "";
 
-    const strength = getPasswordStrength(password?.newPassword || "");
+    // Password strength
+    const strength = getPasswordStrength(newPass);
+    const passwordRules = getPasswordRules(newPass);
+    const passwordsMatch = newPass === (password?.confirmPassword || "");
 
-    // Validation
-    const passwordRegex = /^(?=.*[0-9])(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
-    const passwordsMatch = (password?.newPassword || "") === (password?.confirmPassword || "");
     const isValid =
-        passwordRegex.test(password?.newPassword || "") &&
+        isPasswordValid(newPass) &&
         passwordsMatch &&
         (password?.currentPassword || "");
 
@@ -33,21 +35,66 @@ export default function ChangePasswordModal({show, password, setPassword, onCanc
             onConfirm={isValid ? onSave : () => {
             }}
             confirmText="Save"
-            confirmClass={`create-btn ${!isValid ? "disabled" : ""}`} // add disabled class when invalid
+            confirmClass={`create-btn ${!isValid ? "disabled" : ""}`}
         >
-            <input
-                type="password"
-                placeholder="Enter current password"
-                value={password.currentPassword}
-                onChange={e => setPassword({...password, currentPassword: e.target.value})}
-            />
 
-            <input
-                type="password"
-                placeholder="New password"
-                value={password.newPassword}
-                onChange={e => setPassword({...password, newPassword: e.target.value})}
-            />
+            <div className="input-group password-group">
+                <input
+                    type={showCurrent ? "text" : "password"}
+                    placeholder="Enter current password"
+                    value={password.currentPassword}
+                    onChange={e =>
+                        setPassword({...password, currentPassword: e.target.value})
+                    }
+                />
+
+                <span
+                    className="eye-icon"
+                    onClick={() => setShowCurrent(!showCurrent)}
+                >
+                    {showCurrent ? <FaEyeSlash/> : <FaEye/>}
+                </span>
+            </div>
+
+            <div className="input-group password-group">
+                <input
+                    type={showNew ? "text" : "password"}
+                    placeholder="New password"
+                    value={password.newPassword}
+                    onChange={e =>
+                        setPassword({...password, newPassword: e.target.value})
+                    }
+                />
+
+                <span
+                    className="eye-icon"
+                    onClick={() => setShowNew(!showNew)}
+                >
+                    {showNew ? <FaEyeSlash/> : <FaEye/>}
+                </span>
+            </div>
+
+            {password.newPassword && (
+                <div className="password-rules">
+
+                    <p className={passwordRules.length ? "valid" : "invalid"}>
+                        At least 8 characters
+                    </p>
+
+                    <p className={passwordRules.capital ? "valid" : "invalid"}>
+                        At least 1 capital letter
+                    </p>
+
+                    <p className={passwordRules.number ? "valid" : "invalid"}>
+                        At least 1 number
+                    </p>
+
+                    <p className={passwordRules.special ? "valid" : "invalid"}>
+                        At least 1 special character
+                    </p>
+
+                </div>
+            )}
 
             {password.newPassword && (
                 <div className="password-strength">
@@ -56,20 +103,32 @@ export default function ChangePasswordModal({show, password, setPassword, onCanc
                 </div>
             )}
 
-            <input
-                type="password"
-                placeholder="Re-enter new password"
-                value={password.confirmPassword}
-                onChange={e => setPassword({...password, confirmPassword: e.target.value})}
-            />
+            <div className="input-group password-group">
+                <input
+                    type={showConfirm ? "text" : "password"}
+                    placeholder="Re-enter new password"
+                    value={password.confirmPassword}
+                    onChange={e =>
+                        setPassword({
+                            ...password,
+                            confirmPassword: e.target.value
+                        })
+                    }
+                />
+
+                <span
+                    className="eye-icon"
+                    onClick={() => setShowConfirm(!showConfirm)}
+                >
+                    {showConfirm ? <FaEyeSlash/> : <FaEye/>}
+                </span>
+            </div>
 
             {!passwordsMatch && password.confirmPassword && (
-                <p className="password-error">Passwords do not match</p>
+                <p className="password-error">
+                    Passwords do not match
+                </p>
             )}
-
-            <p className="password-hint">
-                Must be 8+ characters, include a number and special character.
-            </p>
 
         </Modal>
     );

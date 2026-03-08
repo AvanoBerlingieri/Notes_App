@@ -1,5 +1,6 @@
 import {useState} from "react";
 import {signupUser} from "../apis/auth/Signup";
+import {getPasswordStrength, getPasswordRules, isPasswordValid} from "../components/password/PasswordFunctions"
 import {Link, useNavigate} from "react-router-dom";
 import {FaEye, FaEyeSlash} from "react-icons/fa";
 import "./css/Signup.css";
@@ -19,19 +20,8 @@ export default function Signup() {
     const [loading, setLoading] = useState(false);
 
     // Password strength
-    function getPasswordStrength(pass) {
-        let score = 0;
-        if (pass.length >= 8) score++;
-        if (/[0-9]/.test(pass)) score++;
-        if (/[!@#$%^&*(),.?":{}|<>]/.test(pass)) score++;
-        if (/[A-Z]/.test(pass)) score++;
-
-        if (score <= 1) return {label: "Weak", class: "weak"};
-        if (score === 2 || score === 3) return {label: "Medium", class: "medium"};
-        return {label: "Strong", class: "strong"};
-    }
-
     const passwordStrength = getPasswordStrength(form.password);
+    const passwordRules = getPasswordRules(form.password);
     const passwordsMatch = form.password === form.confirmPassword;
 
     // Handle input changes
@@ -40,25 +30,17 @@ export default function Signup() {
         setMessage("");
     };
 
-    const passwordRules = {
-        length: form.password.length >= 8,
-        number: /\d/.test(form.password),
-        special: /[!@#$%^&*(),.?":{}|<>]/.test(form.password)
-    };
-
     // Handle form submission
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-
-        const passwordRegex = /^(?=.*[0-9])(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
 
         if (!form.username || !form.email || !form.password) {
             setMessage("Please Fill In All Required Fields");
             return;
         }
 
-        if (!passwordRegex.test(form.password)) {
+        if (!isPasswordValid(form.password)) {
             setMessage(
                 "Password must be at least 8 characters, include a number and special character"
             );
@@ -141,6 +123,11 @@ export default function Signup() {
                             <p className={passwordRules.special ? "valid" : "invalid"}>
                                 At least 1 special character
                             </p>
+
+                            <p className={passwordRules.special ? "valid" : "invalid"}>
+                                At least 1 special character
+                            </p>
+
                         </div>
                     )}
 

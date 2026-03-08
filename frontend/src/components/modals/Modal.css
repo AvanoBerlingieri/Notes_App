@@ -79,42 +79,70 @@
 }
 
 /* PASSWORD STRENGTH */
-
 .password-strength {
+    width: 95%;
+    padding-left: 16px;
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-bottom: 5px;
 }
 
 .strength-bar {
-    height: 6px;
     flex: 1;
-    border-radius: 5px;
-    background: lightgray;
-    transition: 0.3s;
+    height: 6px;
+    border-radius: 4px;
+    background-color: #eee;
 }
 
 .strength-bar.weak {
-    background: #d93025;
+    background-color: #ff4d4f;
 }
 
 .strength-bar.medium {
-    background: #f9ab00;
+    background-color: #faad14;
 }
 
 .strength-bar.strong {
-    background: #34a853;
+    background-color: #52c41a;
 }
 
-.password-hint {
+.password-strength span {
     font-size: 12px;
-    color: gray;
+    font-weight: 500;
+}
+
+.password-rules p {
+    font-size: 12px;
+    color: #777;
+    margin: 2px 0;
+}
+
+.password-rules .invalid {
+    color: red;
+    padding-left: 20px;
+}
+.password-rules .valid {
+    color: #28a745;
+    padding-left: 20px;
 }
 
 .password-error {
-    font-size: 12px;
-    color: #d93025;
+    color: red;
+    font-size: 14px;
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+/* PASSWORD VISIBILITY*/
+.password-group {
+    position: relative;
+}
+
+.eye-icon {
+    position: absolute;
+    right: 15px;
+    cursor: pointer;
+    color: #777;
 }
 
 /* ANIMATIONS */
