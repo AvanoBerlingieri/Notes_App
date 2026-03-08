@@ -1,7 +1,8 @@
 import {useState} from "react";
 import {loginUser} from "../apis/auth/Login.js";
-import { Link, useNavigate } from "react-router-dom";
-import "./css/Login.css"
+import {Link, useNavigate} from "react-router-dom";
+import "./css/Signup.css"
+import {FaEye, FaEyeSlash} from "react-icons/fa";
 
 export default function Login() {
     // State to hold form input values
@@ -15,6 +16,8 @@ export default function Login() {
 
     // to set messages
     const [message, setMessage] = useState("");
+
+    const [showPassword, setShowPassword] = useState(false);
 
     // Handle changes in input fields
     const handleChange = (e) => {
@@ -45,31 +48,55 @@ export default function Login() {
     };
 
     return (
-        <div className="login-container">
-            <div className="login-card">
+        <div className="signup-container">
+            <div className="signup-card">
                 <h2>Login</h2>
+                <p className="signup-subtitle">
+                    Welcome back! Login to continue organizing your notes
+                </p>
 
                 <form onSubmit={handleSubmit}>
-                    <input
-                        name="usernameOrEmail"
-                        placeholder="Enter username or email"
-                        onChange={handleChange}
-                        required={true}
-                    />
-                    <input
-                        name="password"
-                        placeholder="Password"
-                        type="password"
-                        onChange={handleChange}
-                        required={true}
-                    />
-                    <button className={"loginBtn"} type="submit">Login</button>
+
+                    <div className="input-group">
+
+                        <input className="input-login"
+                               name="usernameOrEmail"
+                               placeholder="Username or Email"
+                               value={form.usernameOrEmail}
+                               onChange={handleChange}
+                               required
+                        />
+                    </div>
+
+                    <div className="input-group password-group">
+
+                        <input className="input-login"
+                               name="password"
+                               placeholder="Password"
+                               type={showPassword ? "text" : "password"}
+                               value={form.password}
+                               onChange={handleChange}
+                               required
+                        />
+
+                        <span
+                            className="eye-icon"
+                            onClick={() => setShowPassword(!showPassword)}
+                        >
+                        {showPassword ? <FaEyeSlash/> : <FaEye/>}
+                    </span>
+                    </div>
+
+                    <button className="signupBtn" type="submit">
+                        Login
+                    </button>
+
                 </form>
 
-                <div className="signup-link">
+                <div className="login-link">
                     <p>Don't have an account?</p>
                     <Link to="/signup">
-                        <button className={"signupBtn"}>Go to Signup</button>
+                        <button className="backBtn">Go to Signup</button>
                     </Link>
                 </div>
 
