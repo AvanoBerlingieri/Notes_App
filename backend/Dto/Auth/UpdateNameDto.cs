@@ -2,10 +2,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace NotesApp.DTO.Auth;
 
-public class UpdateUserDto
+public class UpdateNameDto
 {
-    [EmailAddress] public required string? Email { get; set; }
-    
     [MaxLength(25)] public string? FirstName { get; set; }
 
     [MaxLength(25)] public string? LastName { get; set; }

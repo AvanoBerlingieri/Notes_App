@@ -7,7 +7,9 @@ public interface IAuthService
     Task SignupAsync(SignupDto dto);
     Task<AuthResponseDto> LoginAsync(LoginDto dto);
     Task<UserDto> GetUserAsync(Guid userId);
-    Task<UpdateUserDto> UpdateUserAsync(Guid userId, UpdateUserDto dto);
+    Task<UpdateNameDto> UpdateNameAsync(Guid userId, UpdateNameDto dto);
+    Task<UpdateEmailDto> UpdateEmailAsync(Guid userId, UpdateEmailDto dto);
+
     Task ChangePasswordAsync(Guid userId, ChangePasswordDto dto);
     Task DeleteUserAsync(Guid userId);
 }

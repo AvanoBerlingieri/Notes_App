@@ -121,14 +121,10 @@ public class AuthService : IAuthService
     /// <param name="dto">DTO containing the updated user information</param>
     /// <returns>DTO containing the updated user information</returns>
     /// <exception cref="Exception">
-    /// Thrown if the email format is invalid, the user cannot be found,
-    /// or the update operation fails.
+    /// Thrown if the user can't be found, or the update operation fails.
     /// </exception>
-    public async Task<UpdateUserDto> UpdateUserAsync(Guid userId, UpdateUserDto dto)
+    public async Task<UpdateNameDto> UpdateNameAsync(Guid userId, UpdateNameDto dto)
     {
-        // Validate that the email provided in the DTO is in a valid format
-        if (!IsValidEmail(dto.Email!)) { throw new Exception("Invalid email format!"); }
-
         // Retrieve the user
         var user = await _userManager.FindByIdAsync(userId.ToString());
 
@@ -136,7 +132,6 @@ public class AuthService : IAuthService
         if (user == null) { throw new Exception("User not found."); }
 
         // Update the user's properties with the values provided in the DTO
-        user.Email = dto.Email;
         user.FirstName = dto.FirstName;
         user.LastName = dto.LastName;
 
@@ -147,16 +142,53 @@ public class AuthService : IAuthService
         if (!result.Succeeded) { throw new Exception("Failed to update user."); }
 
         // Return the updated user information as a DTO
-        var updatedUser = new UpdateUserDto
+        var updatedUser = new UpdateNameDto
         {
-            Email = user.Email!,
             FirstName = user.FirstName,
             LastName = user.LastName
         };
 
         return updatedUser;
     }
-    
+
+    /// <summary>
+    /// Updates the email for an existing user.
+    /// </summary>
+    /// <param name="userId">The unique id of the user</param>
+    /// <param name="dto">DTO containing the updated email</param>
+    /// <returns>DTO containing the updated email</returns>
+    /// <exception cref="Exception">
+    /// Thrown if the user can't be found, or the update operation fails.
+    /// </exception>
+    public async Task<UpdateEmailDto> UpdateEmailAsync(Guid userId, UpdateEmailDto dto)
+    {
+        // Validate that the email provided in the DTO is in a valid format
+        if (!IsValidEmail(dto.CurrentEmail!) || !IsValidEmail(dto.NewEmail!)) 
+        { throw new Exception("Invalid email format!"); }
+
+        // Retrieve the user
+        var user = await _userManager.FindByIdAsync(userId.ToString());
+
+        // If the user does not exist, throw an exception
+        if (user == null) { throw new Exception("User not found."); }
+
+        // if dto current email doesn't match the users current email, throw exception
+        if (user.Email != dto.CurrentEmail) { throw new Exception("Current email does not match."); }
+        
+        // update user email
+        var result = await _userManager.SetEmailAsync(user, dto.NewEmail);
+        
+        // If the update fails, throw an exception
+        if (!result.Succeeded) { throw new Exception("Failed to update user."); }
+
+        var updatedUser = new UpdateEmailDto {
+            CurrentEmail = dto.CurrentEmail,
+            NewEmail = dto.NewEmail
+        };
+
+        return updatedUser;
+    }
+
     /// <summary>
     /// Changes the password for a specific user.
     /// </summary>

@@ -121,23 +121,43 @@ public class AuthController : ControllerBase
     }
 
     /// <summary>
-    ///     Updates the current user's profile information
+    ///     Updates the current user's first and last name
     /// </summary>
-    /// <param name="dto">DTO containing the updated user info</param>
-    /// <returns>Returns 204 (No Content) if the update succeeds</returns>
+    /// <param name="dto">DTO containing the updated name</param>
+    /// <returns>Returns 200 if the update succeeds</returns>
     [Authorize]
-    [HttpPut("user")]
-    public async Task<IActionResult> UpdateUser(UpdateUserDto dto)
+    [HttpPut("user/name")]
+    public async Task<IActionResult> UpdateName(UpdateNameDto dto)
     {
         // Grab userId from the claims in the JWT
         var userId = GetUserId();
         if (userId == Guid.Empty) return Unauthorized();
 
         // Call the auth service to update the user's account info
-        await _authService.UpdateUserAsync(userId, dto);
+        var updatedUser = await _authService.UpdateNameAsync(userId, dto);
 
-        // Return 204 (No Content)
-        return StatusCode(204);
+        // Return 200 with user info
+        return Ok(updatedUser);
+    }
+    
+    /// <summary>
+    ///     Updates the current user's email
+    /// </summary>
+    /// <param name="dto">DTO containing the updated email</param>
+    /// <returns>Returns 200 if the update succeeds</returns>
+    [Authorize]
+    [HttpPut("user/email")]
+    public async Task<IActionResult> UpdateEmail(UpdateEmailDto dto)
+    {
+        // Grab userId from the claims in the JWT
+        var userId = GetUserId();
+        if (userId == Guid.Empty) return Unauthorized();
+
+        // Call the auth service to update the user's account info
+        var updatedUser = await _authService.UpdateEmailAsync(userId, dto);
+
+        // Return 200 with user info
+        return Ok(updatedUser);
     }
 
     /// <summary>
@@ -146,7 +166,7 @@ public class AuthController : ControllerBase
     /// <param name="dto">DTO containing the current password and the new password</param>
     /// <returns>Returns 204 (No Content) if the password change succeeds</returns>
     [Authorize]
-    [HttpPatch("user")]
+    [HttpPatch("user/pass")]
     public async Task<IActionResult> ChangePassword(ChangePasswordDto dto)
     {
         // Grab userId from the claims in the JWT
