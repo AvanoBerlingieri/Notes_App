@@ -1,10 +1,12 @@
 .topbar {
-    background: #cfe8ff;
-    height: 75px;
+    background: linear-gradient(0deg, #e6f0ff, #c8e6ff);
+    height: 80px;
     display: grid;
+    flex-shrink: 0;
     grid-template-columns: 1fr 2fr 1fr;
     align-items: center;
     padding: 0 40px;
+    border-bottom: 1px solid lightgrey;
 }
 
 .topbar-left {

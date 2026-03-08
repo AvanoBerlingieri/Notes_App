@@ -116,12 +116,12 @@ export default function Signup() {
                                 At least 8 characters
                             </p>
 
-                            <p className={passwordRules.number ? "valid" : "invalid"}>
-                                At least 1 number
+                            <p className={passwordRules.capital ? "valid" : "invalid"}>
+                                At least 1 capital letter
                             </p>
 
-                            <p className={passwordRules.special ? "valid" : "invalid"}>
-                                At least 1 special character
+                            <p className={passwordRules.number ? "valid" : "invalid"}>
+                                At least 1 number
                             </p>
 
                             <p className={passwordRules.special ? "valid" : "invalid"}>
