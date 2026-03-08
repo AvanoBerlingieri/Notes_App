@@ -4,9 +4,9 @@ import {EditNote} from "../apis/note/EditNote";
 import {CreateNote} from "../apis/note/CreateNote";
 import {DeleteNote} from "../apis/note/DeleteNote";
 
-import CreateNoteModel from "../components/models/CreateNoteModel";
-import RenameNoteModel from "../components/models/RenameNoteModel";
-import DeleteNoteModel from "../components/models/DeleteNoteModel";
+import CreateNoteModal from "../components/modals/notes/CreateNoteModal";
+import RenameNoteModal from "../components/modals/notes/RenameNoteModal";
+import DeleteNoteModal from "../components/modals/notes/DeleteNoteModal";
 
 import Topbar from "../components/layout/Topbar";
 import NoteCard from "../components/notes/NoteCard";
@@ -55,7 +55,7 @@ export default function Home() {
         )
         .sort((a, b) => {
 
-            if (sort === "Alphabetical")
+            if (sort === "alphabetical")
                 return a.title.localeCompare(b.title);
 
             if (sort === "recent")
@@ -107,7 +107,7 @@ export default function Home() {
                             onChange={(e) => setSort(e.target.value)}
                     >
                         <option value="recent">Last Edited</option>
-                        <option value="Alphabetical">Alphabetical</option>
+                        <option value="alphabetical">Alphabetical</option>
                     </select>
 
                     <div className="view-toggle">
@@ -131,7 +131,7 @@ export default function Home() {
 
                     {filteredNotes.map(note => {
 
-                        const notes = {
+                        const noteProps = {
                             note,
                             openMenu,
                             setOpenMenu,
@@ -150,14 +150,14 @@ export default function Home() {
                         };
 
                         return viewMode === "grid"
-                            ? <NoteCard key={note.noteId} {...notes}/>
-                            : <NoteRow key={note.noteId} {...notes}/>
+                            ? <NoteCard key={note.noteId} {...noteProps}/>
+                            : <NoteRow key={note.noteId} {...noteProps}/>
 
                     })}
                 </div>
             </div>
 
-            <CreateNoteModel
+            <CreateNoteModal
                 show={showModal}
                 newNote={newNote}
                 setNewNote={setNewNote}
@@ -165,19 +165,21 @@ export default function Home() {
                 onCreate={handleCreateNote}
             />
 
-            <RenameNoteModel
+            <RenameNoteModal
                 show={showRenameModal}
                 renameTitle={renameTitle}
                 setRenameTitle={setRenameTitle}
                 onCancel={() => setShowRenameModal(false)}
                 onSave={async () => {
+                    if (!renameTitle.trim()) return;
+
                     await EditNote(selectedNote.noteId, renameTitle);
                     await loadNotes();
                     setShowRenameModal(false);
                 }}
             />
 
-            <DeleteNoteModel
+            <DeleteNoteModal
                 show={showDeleteModal}
                 note={selectedNote}
                 onCancel={() => setShowDeleteModal(false)}

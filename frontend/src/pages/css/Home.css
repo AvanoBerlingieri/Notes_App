@@ -17,27 +17,7 @@
     margin-bottom: 30px;
 }
 
-.create-btn {
-    background: #1a73e8;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 10px;
-    cursor: pointer;
-}
-
-.create-btn:hover {
-    background: #1666c1;
-}
-
 .sort {
-    padding: 10px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-}
-
-.search-bar {
-    width: 400px;
     padding: 10px;
     border-radius: 8px;
     border: 1px solid #ccc;
@@ -156,78 +136,6 @@
     font-size: 16px;
     cursor: pointer;
 }
-
-/* MODEL */
-
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0,0,0,0.4);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.modal {
-    background: white;
-    padding: 30px;
-    width: 400px;
-    border-radius: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.modal input {
-    padding: 10px;
-    font-size: 14px;
-}
-
-.modal-buttons {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-}
-
-.cancel-btn {
-    background: #ddd;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 10px;
-    cursor: pointer;
-}
-
-/* SEARCH BAR */
-
-.search-container {
-    border: 1px solid #e4e4e4;
-    border-radius: 20px;
-    overflow: hidden;
-    background: white;
-}
-
-.search-bar {
-    border: none;
-    padding: 10px;
-    width: 375px;
-    outline: none;
-}
-
-.search-btn {
-    background: #1a73e8;
-    color: white;
-    border: none;
-    padding: 10px 14px;
-    cursor: pointer;
-}
-
-.search-btn:hover {
-    background: #1666c1;
-}
-
 /* NOTE MENU */
 
 .note-menu {
@@ -264,17 +172,4 @@
 
 .menu-item.delete {
     color: red;
-}
-
-.delete-btn {
-    background: #d93025;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 10px;
-    cursor: pointer;
-}
-
-.delete-btn:hover {
-    background: #b32318;
 }
