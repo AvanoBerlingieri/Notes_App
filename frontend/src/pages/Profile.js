@@ -5,28 +5,52 @@ import ChangeEmailModal from "../components/modals/profile/ChangeEmailModal";
 import ChangePasswordModal from "../components/modals/profile/ChangePasswordModal";
 import ChangeNameModal from "../components/modals/profile/ChangeNameModal";
 
-import { useState } from "react";
+import {GetUser} from "../apis/auth/GetUser";
+import {UpdateName} from "../apis/auth/UpdateName";
+import {ChangePassword} from "../apis/auth/UpdatePassword";
+
+import {useEffect} from "react";
+import {useState} from "react";
+import {UpdateEmail} from "../apis/auth/UpdateEmail";
 
 export default function Profile() {
-    const [user, setUser] = useState({
-        username: "avano",
-        firstName: "Avano",
-        lastName: "Berlingieri",
-        email: "avano@example.com"
-    });
+    const [user, setUser] = useState(null);
 
     const [showEmailModal, setShowEmailModal] = useState(false);
     const [showNameModal, setShowNameModal] = useState(false);
     const [showPasswordModal, setShowPasswordModal] = useState(false);
 
-    const [email, setEmail] = useState("");
-    const [name, setName] = useState({ firstName: "", lastName: "" });
+    const [email, setEmail] = useState({
+        currentEmail: "",
+        newEmail: "",
+        confirmEmail: "",
+    });
+
+    const [name, setName] = useState({
+        firstName: "",
+        lastName: ""
+    });
 
     const [password, setPassword] = useState({
         currentPassword: "",
         newPassword: "",
         confirmPassword: ""
     });
+
+    useEffect(() => {
+        async function loadUser() {
+            try {
+                const data = await GetUser();
+                setUser(data);
+            } catch (err) {
+                console.error("Failed to load user", err);
+            }
+        }
+
+        loadUser();
+    }, []);
+
+    if (!user) return null;
 
     return (
         <div className="profile-page">
@@ -52,7 +76,7 @@ export default function Profile() {
                         <button
                             className="edit-btn"
                             onClick={() => {
-                                setName({ firstName: user.firstName, lastName: user.lastName });
+                                setName({firstName: user.firstName, lastName: user.lastName});
                                 setShowNameModal(true);
                             }}
                         >
@@ -68,7 +92,11 @@ export default function Profile() {
                         <button
                             className="edit-btn"
                             onClick={() => {
-                                setEmail(user.email);
+                                setEmail({
+                                    currentEmail: user.email,
+                                    newEmail: "",
+                                    confirmEmail: "",
+                                })
                                 setShowEmailModal(true);
                             }}
                         >
@@ -97,9 +125,31 @@ export default function Profile() {
                 name={name}
                 setName={setName}
                 onCancel={() => setShowNameModal(false)}
-                onSave={() => {
-                    console.log("Update name: ", name);
-                    setShowNameModal(false);
+                onSave={async () => {
+                    try {
+                        if (
+                            name.firstName === user.firstName &&
+                            name.lastName === user.lastName
+                        ) {
+                            alert("Name must be changed to save");
+                            return;
+                        }
+
+                        await UpdateName({
+                            firstName: name.firstName,
+                            lastName: name.lastName
+                        });
+
+                        setUser({
+                            ...user,
+                            firstName: name.firstName,
+                            lastName: name.lastName
+                        });
+
+                        setShowNameModal(false);
+                    } catch (err) {
+                        console.error("Failed to update name", err);
+                    }
                 }}
             />
 
@@ -108,9 +158,34 @@ export default function Profile() {
                 email={email}
                 setEmail={setEmail}
                 onCancel={() => setShowEmailModal(false)}
-                onSave={() => {
-                    console.log("Update email: ", email);
-                    setShowEmailModal(false);
+                onSave={async () => {
+                    try {
+
+                        if (email.newEmail === user.email) {
+                            alert("New email must be different to current email");
+                            return;
+                        }
+
+                        await UpdateEmail({
+                            currentEmail: email.currentEmail,
+                            newEmail: email.newEmail
+                        });
+
+                        setUser({
+                            ...user,
+                            email: email.newEmail
+                        });
+
+                        setEmail({
+                            currentEmail: user.newEmail,
+                            newEmail: "",
+                            confirmEmail: ""
+                        })
+
+                        setShowEmailModal(false);
+                    } catch (err) {
+                        console.error("Failed to update email", err);
+                    }
                 }}
             />
 
@@ -118,13 +193,32 @@ export default function Profile() {
                 show={showPasswordModal}
                 password={password}
                 setPassword={setPassword}
-                onCancel={() => setShowPasswordModal(false)}
-                onSave={() => {
-                    console.log("Change password: ", password);
+                onCancel={() => {
+                    setShowPasswordModal(false)
+                    setPassword({
+                        currentPassword: "",
+                        newPassword: "",
+                        confirmPassword: ""
+                    });
+                }}
+                onSave={async () => {
+                    try {
+                        await ChangePassword({
+                            currentPassword: password.currentPassword,
+                            newPassword: password.newPassword
+                        });
 
-                    // Reset inputs after saving
-                    setPassword({ currentPassword: "", newPassword: "", confirmPassword: "" });
-                    setShowPasswordModal(false);
+                        setPassword({
+                            currentPassword: "",
+                            newPassword: "",
+                            confirmPassword: ""
+                        });
+
+                        setShowPasswordModal(false);
+
+                    } catch (err) {
+                        console.error("Failed to change password", err);
+                    }
                 }}
             />
 

@@ -14,21 +14,28 @@ export default function ChangeNameModal({
             onConfirm={onSave}
             confirmText="Save"
         >
-            <input
-                placeholder="First name"
-                value={name.firstName}
-                onChange={(e) =>
-                    setName({...name, firstName: e.target.value})
-                }
-            />
 
-            <input
-                placeholder="Last name"
-                value={name.lastName}
-                onChange={(e) =>
-                    setName({...name, lastName: e.target.value})
-                }
-            />
+            <div className="input-group">
+                <input
+                    placeholder="First name"
+                    value={name.firstName}
+                    onChange={(e) =>
+                        setName({...name, firstName: e.target.value})
+                    }
+                />
+            </div>
+
+            <div className="input-group">
+
+                <input
+                    placeholder="Last name"
+                    value={name.lastName}
+                    onChange={(e) =>
+                        setName({...name, lastName: e.target.value})
+                    }
+                />
+            </div>
+
         </Modal>
     );
 }
