@@ -289,7 +289,9 @@ public class AuthService : IAuthService
             Expiration = tokenData.Expiration,
             UserId = user.Id,
             Email = user.Email!,
-            UserName = user.UserName!
+            UserName = user.UserName!,
+            FirstName = user.FirstName,
+            LastName = user.LastName
         };
     }
 

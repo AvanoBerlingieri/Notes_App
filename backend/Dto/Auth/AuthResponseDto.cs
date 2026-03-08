@@ -13,4 +13,8 @@ public class AuthResponseDto
     [Required] public required string Email { get; set; }
 
     [Required] public required string UserName { get; set; }
+    
+    [MaxLength(25)] public string? FirstName { get; set; }
+
+    [MaxLength(25)] public string? LastName { get; set; }
 }
