@@ -48,7 +48,10 @@ public class AuthController : ControllerBase
         }
         catch (Exception e)
         {
-            return BadRequest(e.Message);
+            return BadRequest(new
+            {
+                message = e.Message
+            });
         }
     }
 
@@ -93,7 +96,10 @@ public class AuthController : ControllerBase
         }
         catch (Exception e)
         {
-            return BadRequest(e.Message);
+            return BadRequest(new 
+            {
+                message = e.Message
+            });
         }
     }
 
@@ -136,7 +142,10 @@ public class AuthController : ControllerBase
         }
         catch (Exception e)
         {
-            return BadRequest(e.Message);
+            return BadRequest(new 
+            {
+                message = e.Message
+            });
         }
     }
 
@@ -163,7 +172,10 @@ public class AuthController : ControllerBase
         }
         catch (Exception e)
         {
-            return BadRequest(e.Message);
+            return BadRequest(new 
+            {
+                message = e.Message
+            });
         }
     }
 
@@ -190,7 +202,10 @@ public class AuthController : ControllerBase
         }
         catch (Exception e)
         {
-            return BadRequest(e.Message);
+            return BadRequest(new 
+            {
+                message = e.Message
+            });
         }
     }
 
@@ -213,11 +228,14 @@ public class AuthController : ControllerBase
             await _authService.ChangePasswordAsync(userId, dto);
 
             // Return 204 (No Content) if password successfully changed
-            return StatusCode(204);
+            return NoContent();
         }
         catch (Exception e)
         {
-            return BadRequest(e.Message);
+            return BadRequest(new 
+            {
+                message = e.Message
+            });
         }
     }
 
@@ -243,7 +261,10 @@ public class AuthController : ControllerBase
         }
         catch (Exception e)
         {
-            return BadRequest(e.Message);
+            return BadRequest(new 
+            {
+                message = e.Message
+            });
         }
     }
 

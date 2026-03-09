@@ -70,7 +70,7 @@ public class AuthService : IAuthService
             user = await _userManager.FindByNameAsync(dto.UserNameOrEmail);
 
         // Fail if user is not found
-        if (user == null) throw new Exception("User not found!.");
+        if (user == null) throw new Exception("User not found!");
 
         // Validate password using Identity
         var result = await _signInManager.CheckPasswordSignInAsync(user, dto.Password, false);

@@ -151,7 +151,10 @@ public class NotesController : ControllerBase
         }
         catch (KeyNotFoundException notFound)
         {
-            return NotFound(notFound.Message);
+            return NotFound(new
+            {
+                notFound.Message
+            });
         }
         catch (Exception e)
         {
