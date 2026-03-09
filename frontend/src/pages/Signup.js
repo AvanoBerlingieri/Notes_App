@@ -1,9 +1,10 @@
 import {useState} from "react";
 import {signupUser} from "../apis/auth/Signup";
 import {getPasswordStrength, getPasswordRules, isPasswordValid} from "../components/password/PasswordFunctions"
-import {Link, useNavigate} from "react-router-dom";
+import {Link, Navigate, useNavigate} from "react-router-dom";
 import {FaEye, FaEyeSlash} from "react-icons/fa";
 import "./css/Signup.css";
+import {useAuth} from "../context/AuthContext";
 
 export default function Signup() {
     // State to hold form input values
@@ -15,14 +16,23 @@ export default function Signup() {
     });
 
     const navigate = useNavigate();
+    const {authenticated, loading} = useAuth();
+
     const [message, setMessage] = useState("");
     const [showPassword, setShowPassword] = useState(false);
-    const [loading, setLoading] = useState(false);
+    const [load, setLoad] = useState(false);
 
     // Password strength
     const passwordStrength = getPasswordStrength(form.password);
     const passwordRules = getPasswordRules(form.password);
     const passwordsMatch = form.password === form.confirmPassword;
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const validFormat = emailRegex.test(form.email);
+    const lengthReq = form.username.length >= 5 && form.email.length > 0
+        && form.password.length >= 8 && form.confirmPassword.length >= 8
+
+    const isValid = validFormat && lengthReq;
 
     // Handle input changes
     const handleChange = (e) => {
@@ -33,7 +43,7 @@ export default function Signup() {
     // Handle form submission
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setLoading(true);
+        setLoad(true);
 
         if (!form.username || !form.email || !form.password) {
             setMessage("Please Fill In All Required Fields");
@@ -58,9 +68,15 @@ export default function Signup() {
             navigate("/");
         } catch (err) {
             setMessage(err.response?.data?.message || "Error signing up");
-            setLoading(false);
+            setLoad(false);
         }
     };
+
+    if (loading) return null;
+
+    if (authenticated) {
+        return <Navigate to="/home" replace/>;
+    }
 
     return (
         <div className="signup-container">
@@ -78,6 +94,14 @@ export default function Signup() {
                             onChange={handleChange}
                             required
                         />
+                    </div>
+
+                    <div className="password-rules">
+                    {form.username && (
+                        <p className={form.username.length >= 5 ? "valid" : "invalid"}>
+                            Username must be at least 5 characters
+                        </p>
+                    )}
                     </div>
 
                     <div className="input-group">
@@ -156,9 +180,9 @@ export default function Signup() {
 
                     <button className="signupBtn"
                             type="submit"
-                            disabled={loading || !form.password || !passwordsMatch}
+                            disabled={load || !passwordsMatch || !isValid}
                     >
-                        {loading ? "Creating Account..." : "Sign Up"}
+                        {load ? "Creating Account..." : "Sign Up"}
                     </button>
 
                 </form>

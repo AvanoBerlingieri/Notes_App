@@ -1,8 +1,10 @@
 import {useState} from "react";
 import {loginUser} from "../apis/auth/Login.js";
-import {Link, useNavigate} from "react-router-dom";
+import {Link, Navigate, useNavigate} from "react-router-dom";
+import {useAuth} from "../context/AuthContext";
 import "./css/Signup.css"
 import {FaEye, FaEyeSlash} from "react-icons/fa";
+import {GetUser} from "../apis/auth/GetUser";
 
 export default function Login() {
     // State to hold form input values
@@ -10,6 +12,9 @@ export default function Login() {
         usernameOrEmail: "",
         password: ""
     });
+
+    const {authenticated, loading} = useAuth();
+    const {setUser, setAuthenticated} = useAuth();
 
     // hooks for navigation
     const navigate = useNavigate();
@@ -39,6 +44,9 @@ export default function Login() {
         try {
             const res = await loginUser(form);
 
+            const user = await GetUser();
+            setUser(user);
+            setAuthenticated(true);
             setMessage(res.message);
             navigate("/home");
 
@@ -46,6 +54,12 @@ export default function Login() {
             setMessage(err.response?.data?.message || "Login failed");
         }
     };
+
+    if (loading) return null;
+
+    if (authenticated) {
+        return <Navigate to="/home" replace/>;
+    }
 
     return (
         <div className="signup-container">

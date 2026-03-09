@@ -84,7 +84,6 @@ export default function Home() {
 
             <Topbar
                 title="Notes App"
-                username={"Avano"}
                 showBack={false}
                 saveStatus={false}
                 showSearch={true}

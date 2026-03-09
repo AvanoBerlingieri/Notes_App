@@ -105,7 +105,6 @@ export default function NoteEditor() {
 
             <Topbar
                 title={title}
-                username={"Avano"}
                 saveStatus={saveStatus}
                 showBack={true}
                 showSearch={false}

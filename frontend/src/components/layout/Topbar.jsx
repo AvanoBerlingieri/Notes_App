@@ -4,15 +4,17 @@ import {CgProfile} from "react-icons/cg";
 import {useNavigate} from "react-router-dom";
 import {FaArrowLeft} from "react-icons/fa";
 import "../../pages/css/Topbar.css"
+import { useAuth } from "../../context/AuthContext";
 
 export default function Topbar({
-                                   title, username,
+                                   title,
                                    showBack, saveStatus,
                                    showSearch, setSearch,
                                    searchInput, setSearchInput
                                }) {
 
     const navigate = useNavigate();
+    const { user } = useAuth();
 
     return (
         <div className="topbar">
@@ -53,7 +55,7 @@ export default function Topbar({
                 <div className="user-info"
                      onClick={() => navigate("/profile")}
                 >
-                    <span className="username">{username}</span>
+                    <span className="username">{user.userName}</span>
 
                     <span className="profile-icon"><CgProfile/></span>
 

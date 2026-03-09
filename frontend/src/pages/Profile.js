@@ -5,16 +5,15 @@ import ChangeEmailModal from "../components/modals/profile/ChangeEmailModal";
 import ChangePasswordModal from "../components/modals/profile/ChangePasswordModal";
 import ChangeNameModal from "../components/modals/profile/ChangeNameModal";
 
-import {GetUser} from "../apis/auth/GetUser";
 import {UpdateName} from "../apis/auth/UpdateName";
 import {ChangePassword} from "../apis/auth/UpdatePassword";
 
-import {useEffect} from "react";
 import {useState} from "react";
 import {UpdateEmail} from "../apis/auth/UpdateEmail";
+import {useAuth} from "../context/AuthContext";
 
 export default function Profile() {
-    const [user, setUser] = useState(null);
+    const {user, setUser} = useAuth();
 
     const [showEmailModal, setShowEmailModal] = useState(false);
     const [showNameModal, setShowNameModal] = useState(false);
@@ -37,19 +36,6 @@ export default function Profile() {
         confirmPassword: ""
     });
 
-    useEffect(() => {
-        async function loadUser() {
-            try {
-                const data = await GetUser();
-                setUser(data);
-            } catch (err) {
-                console.error("Failed to load user", err);
-            }
-        }
-
-        loadUser();
-    }, []);
-
     if (!user) return null;
 
     return (
@@ -57,7 +43,6 @@ export default function Profile() {
 
             <Topbar
                 title="Profile"
-                username={user.username}
                 showBack={true}
                 saveStatus={false}
                 showSearch={false}
@@ -177,7 +162,7 @@ export default function Profile() {
                         });
 
                         setEmail({
-                            currentEmail: user.newEmail,
+                            currentEmail: email.newEmail,
                             newEmail: "",
                             confirmEmail: ""
                         })
