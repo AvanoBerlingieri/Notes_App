@@ -33,17 +33,23 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> Signup([FromBody] SignupDto dto)
     {
         // Validate request payload
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
+        if (!ModelState.IsValid) return BadRequest(ModelState);
 
-        // call signup method
-        await _authService.SignupAsync(dto);
-
-        // Return success status
-        return StatusCode(201, new
+        try
         {
-            message = "User created successfully."
-        });
+            // call signup method
+            await _authService.SignupAsync(dto);
+
+            // Return success status
+            return Ok(new
+            {
+                message = "User created successfully."
+            });
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
     }
 
     /// <summary>
@@ -62,32 +68,39 @@ public class AuthController : ControllerBase
         // Validate request payload
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
-        // call login method
-        var response = await _authService.LoginAsync(dto);
-
-        // Creating the cookie
-        Response.Cookies.Append("accessToken", response.Token, new CookieOptions
+        try
         {
-            HttpOnly = true, // prevents XSS scripts from stealing the token
-            // Secure = true, uncomment when going into prod
-            SameSite = SameSiteMode.Lax,
-            Expires = response.Expiration
-        });
+            // call login method
+            var response = await _authService.LoginAsync(dto);
 
-        // Return authentication response
-        return StatusCode(200, new
+            // Creating the cookie
+            Response.Cookies.Append("accessToken", response.Token, new CookieOptions
+            {
+                HttpOnly = true, // prevents XSS scripts from stealing the token
+                // Secure = true, uncomment when going into prod
+                SameSite = SameSiteMode.Lax,
+                Expires = response.Expiration
+            });
+
+            // Return authentication response
+            return Ok(new
+            {
+                response.UserId,
+                response.Email,
+                response.UserName,
+                message = "User authenticated successfully."
+            });
+        }
+        catch (Exception e)
         {
-            response.UserId,
-            response.Email,
-            response.UserName,
-            message = "User authenticated successfully."
-        });
+            return BadRequest(e.Message);
+        }
     }
 
     /// <summary>
     ///     Deletes jwt from cookie to end user session
     /// </summary>
-    /// <returns>Returns 204 (No Content)</returns>
+    /// <returns>Returns 200 with message</returns>
     [Authorize]
     [HttpPost("logout")]
     public async Task<IActionResult> Logout()
@@ -95,7 +108,7 @@ public class AuthController : ControllerBase
         // delete jwt from cookie
         Response.Cookies.Delete("accessToken");
 
-        return StatusCode(200, new
+        return Ok(new
         {
             message = "Logged out successfully."
         });
@@ -109,15 +122,22 @@ public class AuthController : ControllerBase
     [HttpGet("user")]
     public async Task<IActionResult> GetUser()
     {
-        // Grab userId from the claims in the JWT
-        var userId = GetUserId();
-        if (userId == Guid.Empty) return Unauthorized();
+        try
+        {
+            // Grab userId from the claims in the JWT
+            var userId = GetUserId();
+            if (userId == Guid.Empty) return Unauthorized();
 
-        // Call the auth service to retrieve the user data
-        var user = await _authService.GetUserAsync(userId);
+            // Call the auth service to retrieve the user data
+            var user = await _authService.GetUserAsync(userId);
 
-        // Return the user information with 200 code (ok)
-        return StatusCode(200, user);
+            // Return the user information with 200 code (ok)
+            return Ok(user);
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
     }
 
     /// <summary>
@@ -129,17 +149,24 @@ public class AuthController : ControllerBase
     [HttpPut("user/name")]
     public async Task<IActionResult> UpdateName(UpdateNameDto dto)
     {
-        // Grab userId from the claims in the JWT
-        var userId = GetUserId();
-        if (userId == Guid.Empty) return Unauthorized();
+        try
+        {
+            // Grab userId from the claims in the JWT
+            var userId = GetUserId();
+            if (userId == Guid.Empty) return Unauthorized();
 
-        // Call the auth service to update the user's account info
-        var updatedUser = await _authService.UpdateNameAsync(userId, dto);
+            // Call the auth service to update the user's account info
+            var updatedUser = await _authService.UpdateNameAsync(userId, dto);
 
-        // Return 200 with user info
-        return Ok(updatedUser);
+            // Return 200 with user info
+            return Ok(updatedUser);
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
     }
-    
+
     /// <summary>
     ///     Updates the current user's email
     /// </summary>
@@ -149,15 +176,22 @@ public class AuthController : ControllerBase
     [HttpPut("user/email")]
     public async Task<IActionResult> UpdateEmail(UpdateEmailDto dto)
     {
-        // Grab userId from the claims in the JWT
-        var userId = GetUserId();
-        if (userId == Guid.Empty) return Unauthorized();
+        try
+        {
+            // Grab userId from the claims in the JWT
+            var userId = GetUserId();
+            if (userId == Guid.Empty) return Unauthorized();
 
-        // Call the auth service to update the user's account info
-        var updatedUser = await _authService.UpdateEmailAsync(userId, dto);
+            // Call the auth service to update the user's account info
+            var updatedUser = await _authService.UpdateEmailAsync(userId, dto);
 
-        // Return 200 with user info
-        return Ok(updatedUser);
+            // Return 200 with user info
+            return Ok(updatedUser);
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
     }
 
     /// <summary>
@@ -169,15 +203,22 @@ public class AuthController : ControllerBase
     [HttpPatch("user/pass")]
     public async Task<IActionResult> ChangePassword(ChangePasswordDto dto)
     {
-        // Grab userId from the claims in the JWT
-        var userId = GetUserId();
-        if (userId == Guid.Empty) return Unauthorized();
+        try
+        {
+            // Grab userId from the claims in the JWT
+            var userId = GetUserId();
+            if (userId == Guid.Empty) return Unauthorized();
 
-        // Call the auth service to update the user's password
-        await _authService.ChangePasswordAsync(userId, dto);
+            // Call the auth service to update the user's password
+            await _authService.ChangePasswordAsync(userId, dto);
 
-        // Return 204 (No Content) if password successfully changed
-        return StatusCode(204);
+            // Return 204 (No Content) if password successfully changed
+            return StatusCode(204);
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
     }
 
     /// <summary>
@@ -188,18 +229,22 @@ public class AuthController : ControllerBase
     [HttpDelete("user")]
     public async Task<IActionResult> DeleteUser()
     {
-        // Grab userId from the claims in the JWT
-        var userId = GetUserId();
-        if (userId == Guid.Empty) return Unauthorized();
-
-        // Call the auth service to delete the user
-        await _authService.DeleteUserAsync(userId);
-
-        // Return 204 (No Content) if user deleted successfully
-        return StatusCode(204, new
+        try
         {
-            message = "User deleted successfully."
-        });
+            // Grab userId from the claims in the JWT
+            var userId = GetUserId();
+            if (userId == Guid.Empty) return Unauthorized();
+
+            // Call the auth service to delete the user
+            await _authService.DeleteUserAsync(userId);
+
+            // Return 204 (No Content) if user deleted successfully
+            return NoContent();
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
     }
 
     /// <summary>

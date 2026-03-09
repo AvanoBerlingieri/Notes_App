@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NotesApp.DTO.Notes;
@@ -39,9 +40,9 @@ public class NotesController : ControllerBase
             var note = await _noteService.GetNoteAsync(userId, noteId);
             return Ok(note);
         }
-        catch (Exception ex)
+        catch (Exception e)
         {
-            return NotFound(new { message = ex.Message });
+            return NotFound(e.Message);
         }
     }
 
@@ -84,9 +85,15 @@ public class NotesController : ControllerBase
         var userId = GetUserId();
         if (userId == Guid.Empty) return Unauthorized();
 
-        var note = await _noteService.CreateNoteAsync(userId, dto);
-
-        return StatusCode(201, note);
+        try
+        {
+            var note = await _noteService.CreateNoteAsync(userId, dto);
+            return Ok(note);
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
     }
 
     /// <summary>
@@ -110,11 +117,11 @@ public class NotesController : ControllerBase
         try
         {
             await _noteService.DeleteNoteAsync(userId, noteId);
-            return Ok(new { message = "Note deleted successfully." });
+            return NoContent();
         }
-        catch (Exception ex)
+        catch (Exception e)
         {
-            return BadRequest(new { message = ex.Message });
+            return BadRequest(e.Message);
         }
     }
 
@@ -142,9 +149,13 @@ public class NotesController : ControllerBase
             var note = await _noteService.EditNoteAsync(userId, noteId, updatedTitle);
             return Ok(note);
         }
-        catch (Exception ex)
+        catch (KeyNotFoundException notFound)
         {
-            return BadRequest(new { message = ex.Message });
+            return NotFound(notFound.Message);
+        }
+        catch (Exception e)
+        {
+            return Forbid(e.Message);
         }
     }
 

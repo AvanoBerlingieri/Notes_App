@@ -21,13 +21,18 @@ public class NoteService : INoteService
     /// <param name="dto">The title and initial content.</param>
     public async Task<NoteResponseDto> CreateNoteAsync(Guid userId, CreateNoteDto dto)
     {
+        if (dto.Title.Length == 0)
+        {
+            throw new Exception("Note requires title.");
+        }
+        
         var note = new Note
         {
             Title = dto.Title,
             Content = dto.Content,
             OwnerId = userId
         };
-
+        
         _context.Notes.Add(note);
         await _context.SaveChangesAsync();
 
@@ -59,7 +64,7 @@ public class NoteService : INoteService
 
         if (note == null) throw new Exception("Note not found.");
 
-        if (note.OwnerId != userId) throw new Exception("Only the owner can delete this note.");
+        if (note.OwnerId != userId) throw new Exception("Only the owner can delete this note!");
 
         _context.Notes.Remove(note);
         await _context.SaveChangesAsync();
@@ -84,13 +89,13 @@ public class NoteService : INoteService
             .Include(n => n.Collaborators)
             .FirstOrDefaultAsync(n => n.NoteId == noteId);
 
-        if (note == null) throw new Exception("Note not found.");
+        if (note == null) throw new KeyNotFoundException("Note not found.");
 
         // Check if user has editing rights
-        var canEdit = note.OwnerId == userId ||
-                      note.Collaborators.Any(c => c.UserId == userId && c.Role == NoteRole.Editor);
+        var canEdit = note.OwnerId == userId || 
+                      note.Collaborators.Any(c => c.Role == NoteRole.Editor);
 
-        if (!canEdit) throw new Exception("You do not have permission to edit this note.");
+        if (!canEdit) throw new Exception("You do not have permission to edit this note!");
 
         note.Title = updatedTitle;
         note.LastModified = DateTime.UtcNow;

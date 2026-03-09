@@ -14,19 +14,14 @@ namespace NotesApp.Service.Auth;
 /// </summary>
 public class AuthService : IAuthService
 {
-    private readonly IConfiguration _configuration;
     private readonly SignInManager<User> _signInManager;
     private readonly UserManager<User> _userManager;
 
     // Injects Identity managers and configuration settings.
-    public AuthService(
-        UserManager<User> userManager,
-        SignInManager<User> signInManager,
-        IConfiguration configuration)
+    public AuthService(UserManager<User> userManager, SignInManager<User> signInManager)
     {
         _userManager = userManager;
         _signInManager = signInManager;
-        _configuration = configuration;
     }
 
     /// <summary>
@@ -37,13 +32,11 @@ public class AuthService : IAuthService
     {
         // Check if username already exists
         var existingUserByName = await _userManager.FindByNameAsync(dto.UserName);
-        if (existingUserByName != null)
-            throw new Exception("Username already taken.");
+        if (existingUserByName != null) throw new Exception("Username already taken!");
 
         // Check if email already exists
         var existingUserByEmail = await _userManager.FindByEmailAsync(dto.Email);
-        if (existingUserByEmail != null)
-            throw new Exception("Email already in use.");
+        if (existingUserByEmail != null) throw new Exception("Email already in use!");
 
         // Create new user entity
         var user = new User
@@ -58,8 +51,7 @@ public class AuthService : IAuthService
         var result = await _userManager.CreateAsync(user, dto.Password);
 
         // If creation fails, return Identity validation errors
-        if (!result.Succeeded)
-            throw new Exception(string.Join(", ", result.Errors.Select(e => e.Description)));
+        if (!result.Succeeded) throw new Exception(string.Join(", ", result.Errors.Select(e => e.Description)));
     }
 
     /// <summary>
@@ -78,7 +70,7 @@ public class AuthService : IAuthService
             user = await _userManager.FindByNameAsync(dto.UserNameOrEmail);
 
         // Fail if user is not found
-        if (user == null) {throw new Exception("Invalid credentials.");}
+        if (user == null) throw new Exception("User not found!.");
 
         // Validate password using Identity
         var result = await _signInManager.CheckPasswordSignInAsync(user, dto.Password, false);
@@ -91,7 +83,7 @@ public class AuthService : IAuthService
     }
 
     /// <summary>
-    /// Retrieves the account information for a specific user.
+    ///     Retrieves the account information for a specific user.
     /// </summary>
     /// <param name="userId">The unique id of the user</param>
     /// <returns>Returns a DTO containing the user's username, email, first name, and last name</returns>
@@ -102,7 +94,7 @@ public class AuthService : IAuthService
         var user = await _userManager.FindByIdAsync(userId.ToString());
 
         // If the user does not exist, throw an exception
-        if (user == null) { throw new Exception("User not found."); }
+        if (user == null) throw new Exception("User not found!");
 
         // Map the user object to a UserDto that can be returned to the client
         return new UserDto
@@ -115,13 +107,13 @@ public class AuthService : IAuthService
     }
 
     /// <summary>
-    /// Updates the profile information for an existing user.
+    ///     Updates the profile information for an existing user.
     /// </summary>
     /// <param name="userId">The unique id of the user</param>
     /// <param name="dto">DTO containing the updated user information</param>
     /// <returns>DTO containing the updated user information</returns>
     /// <exception cref="Exception">
-    /// Thrown if the user can't be found, or the update operation fails.
+    ///     Thrown if the user can't be found, or the update operation fails.
     /// </exception>
     public async Task<UpdateNameDto> UpdateNameAsync(Guid userId, UpdateNameDto dto)
     {
@@ -129,7 +121,7 @@ public class AuthService : IAuthService
         var user = await _userManager.FindByIdAsync(userId.ToString());
 
         // If the user does not exist, throw an exception
-        if (user == null) { throw new Exception("User not found."); }
+        if (user == null) throw new Exception("User not found.");
 
         // Update the user's properties with the values provided in the DTO
         user.FirstName = dto.FirstName;
@@ -139,7 +131,7 @@ public class AuthService : IAuthService
         var result = await _userManager.UpdateAsync(user);
 
         // If the update fails, throw an exception
-        if (!result.Succeeded) { throw new Exception("Failed to update user."); }
+        if (!result.Succeeded) throw new Exception("Failed to update user.");
 
         // Return the updated user information as a DTO
         var updatedUser = new UpdateNameDto
@@ -152,36 +144,37 @@ public class AuthService : IAuthService
     }
 
     /// <summary>
-    /// Updates the email for an existing user.
+    ///     Updates the email for an existing user.
     /// </summary>
     /// <param name="userId">The unique id of the user</param>
     /// <param name="dto">DTO containing the updated email</param>
     /// <returns>DTO containing the updated email</returns>
     /// <exception cref="Exception">
-    /// Thrown if the user can't be found, or the update operation fails.
+    ///     Thrown if the user can't be found, or the update operation fails.
     /// </exception>
     public async Task<UpdateEmailDto> UpdateEmailAsync(Guid userId, UpdateEmailDto dto)
     {
         // Validate that the email provided in the DTO is in a valid format
-        if (!IsValidEmail(dto.CurrentEmail!) || !IsValidEmail(dto.NewEmail!)) 
-        { throw new Exception("Invalid email format!"); }
+        if (!IsValidEmail(dto.CurrentEmail!) || !IsValidEmail(dto.NewEmail!))
+            throw new Exception("Invalid email format!");
 
         // Retrieve the user
         var user = await _userManager.FindByIdAsync(userId.ToString());
 
         // If the user does not exist, throw an exception
-        if (user == null) { throw new Exception("User not found."); }
+        if (user == null) throw new Exception("User not found.");
 
         // if dto current email doesn't match the users current email, throw exception
-        if (user.Email != dto.CurrentEmail) { throw new Exception("Current email does not match."); }
-        
+        if (user.Email != dto.CurrentEmail) throw new Exception("Current email does not match.");
+
         // update user email
         var result = await _userManager.SetEmailAsync(user, dto.NewEmail);
-        
-        // If the update fails, throw an exception
-        if (!result.Succeeded) { throw new Exception("Failed to update user."); }
 
-        var updatedUser = new UpdateEmailDto {
+        // If the update fails, throw an exception
+        if (!result.Succeeded) throw new Exception("Failed to update user.");
+
+        var updatedUser = new UpdateEmailDto
+        {
             CurrentEmail = dto.CurrentEmail,
             NewEmail = dto.NewEmail
         };
@@ -190,7 +183,7 @@ public class AuthService : IAuthService
     }
 
     /// <summary>
-    /// Changes the password for a specific user.
+    ///     Changes the password for a specific user.
     /// </summary>
     /// <param name="userId">The unique id of the user</param>
     /// <param name="dto">DTO containing the user's current password and the new password.</param>
@@ -201,7 +194,7 @@ public class AuthService : IAuthService
         var user = await _userManager.FindByIdAsync(userId.ToString());
 
         // Check if the user exists
-        if (user == null) { throw new Exception("User not found."); }
+        if (user == null) throw new Exception("User not found.");
 
         // Attempt to change the password
         var result = await _userManager.ChangePasswordAsync(
@@ -211,11 +204,11 @@ public class AuthService : IAuthService
         );
 
         // If the password change fails, throw an exception
-        if (!result.Succeeded) { throw new Exception("Password change failed."); }
+        if (!result.Succeeded) throw new Exception("Password change failed.");
     }
 
     /// <summary>
-    /// Delete a user account from the database.
+    ///     Delete a user account from the database.
     /// </summary>
     /// <param name="userId">The unique id of the user</param>
     /// <exception cref="Exception">Thrown if the user cannot be found or the delete operation fails</exception>
@@ -225,13 +218,13 @@ public class AuthService : IAuthService
         var user = await _userManager.FindByIdAsync(userId.ToString());
 
         // If the user does not exist, throw an exception
-        if (user == null) { throw new Exception("User not found."); }
+        if (user == null) throw new Exception("User not found.");
 
         // delete the user account
         var result = await _userManager.DeleteAsync(user);
 
         // If the delete operation fails, throw an exception
-        if (!result.Succeeded) { throw new Exception("Failed to delete user."); }
+        if (!result.Succeeded) throw new Exception("Failed to delete user.");
     }
 
     /// <summary>
@@ -252,7 +245,7 @@ public class AuthService : IAuthService
         var claims = new List<Claim>
         {
             new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-            new(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new(ClaimTypes.NameIdentifier, user.Id.ToString())
         };
 
         // Create signing credentials
