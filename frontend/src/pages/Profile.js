@@ -51,7 +51,7 @@ export default function Profile() {
             <div className="profile-content">
                 <div className="profile-card">
 
-                    <h2 className="profile-username">{user.username}</h2>
+                    <h2 className="profile-username">{user.userName}</h2>
 
                     <div className="profile-field">
                         <div>
@@ -133,7 +133,8 @@ export default function Profile() {
 
                         setShowNameModal(false);
                     } catch (err) {
-                        console.error("Failed to update name", err);
+                        const msg = err.response?.data?.message || "Something went wrong";
+                        alert(msg);
                     }
                 }}
             />
@@ -145,7 +146,6 @@ export default function Profile() {
                 onCancel={() => setShowEmailModal(false)}
                 onSave={async () => {
                     try {
-
                         if (email.newEmail === user.email) {
                             alert("New email must be different to current email");
                             return;
@@ -169,7 +169,8 @@ export default function Profile() {
 
                         setShowEmailModal(false);
                     } catch (err) {
-                        console.error("Failed to update email", err);
+                        const msg = err.response?.data?.message || "Something went wrong";
+                        alert(msg);
                     }
                 }}
             />
@@ -202,7 +203,8 @@ export default function Profile() {
                         setShowPasswordModal(false);
 
                     } catch (err) {
-                        console.error("Failed to change password", err);
+                        const msg = err.response?.data?.message || "Something went wrong";
+                        alert(msg);
                     }
                 }}
             />

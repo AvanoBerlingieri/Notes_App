@@ -66,7 +66,10 @@ export default function Home() {
 
     async function handleCreateNote() {
 
-        if (!newNote.Title) return;
+        if (!newNote.Title) {
+            alert("Note must have title!")
+            return;
+        }
 
         await CreateNote({
             Title: newNote.Title,
@@ -170,7 +173,15 @@ export default function Home() {
                 setRenameTitle={setRenameTitle}
                 onCancel={() => setShowRenameModal(false)}
                 onSave={async () => {
-                    if (!renameTitle.trim()) return;
+                    if (!renameTitle.trim()) {
+                        alert("Note must have title!");
+                        return;
+                    }
+
+                    if (selectedNote.title === renameTitle) {
+                        alert("Note title must be different to save!");
+                        return;
+                    }
 
                     await EditNote(selectedNote.noteId, renameTitle);
                     await loadNotes();

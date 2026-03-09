@@ -13,8 +13,7 @@ export default function Login() {
         password: ""
     });
 
-    const {authenticated, loading} = useAuth();
-    const {setUser, setAuthenticated} = useAuth();
+    const {authenticated, loading, setUser, setAuthenticated} = useAuth();
 
     // hooks for navigation
     const navigate = useNavigate();
@@ -23,6 +22,7 @@ export default function Login() {
     const [message, setMessage] = useState("");
 
     const [showPassword, setShowPassword] = useState(false);
+    const [load, setLoad] = useState(false);
 
     // Handle changes in input fields
     const handleChange = (e) => {
@@ -33,10 +33,12 @@ export default function Login() {
     // Handle form submission
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoad(true);
 
         // client side validation
         if (!form.usernameOrEmail || !form.password) {
             setMessage("Please fill in all fields");
+            setLoad(false);
             return;
         }
 
@@ -48,10 +50,12 @@ export default function Login() {
             setUser(user);
             setAuthenticated(true);
             setMessage(res.message);
+
             navigate("/home");
 
         } catch (err) {
-            setMessage(err.response?.data?.message || "Login failed");
+            setMessage(err.response?.data?.message || "Invalid username/email or password");
+            setLoad(false);
         }
     };
 
@@ -101,8 +105,10 @@ export default function Login() {
                     </span>
                     </div>
 
-                    <button className="signupBtn" type="submit">
-                        Login
+                    <button className="signupBtn"
+                            type="submit"
+                            disabled={load || !form.usernameOrEmail || !form.password}
+                    >{load ? "Logging in..." : "Login"}
                     </button>
 
                 </form>
