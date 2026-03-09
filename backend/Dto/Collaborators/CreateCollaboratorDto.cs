@@ -3,7 +3,7 @@ using NotesApp.Model;
 
 namespace NotesApp.DTO.Collaborators;
 
-public class CollaboratorResponseDto
+public class CreateCollaboratorDto
 {
     [Required] public required Guid NoteId { get; set; }
 
