@@ -33,7 +33,7 @@ public class CollabServiceImpl : ICollabService
         if (dto.UserId == Guid.Empty || dto.NoteId == Guid.Empty)
             throw new ArgumentException("UserId and NoteId are required.");
 
-        if (!Enum.IsDefined(typeof(NoteRole), dto.Role)) throw new ArgumentOutOfRangeException(nameof(dto.Role));
+        if (!Enum.IsDefined(dto.Role)) throw new ArgumentOutOfRangeException(nameof(dto.Role));
 
         if (dto.UserId == noteOwnerId) throw new InvalidOperationException("Owner cannot be added as collaborator.");
 
@@ -104,8 +104,97 @@ public class CollabServiceImpl : ICollabService
         await _context.SaveChangesAsync();
     }
 
-    public async Task<CollaboratorResponseDto> UpdateRole(UpdateRoleDto dto, Guid collabId, Guid noteOwnerId)
+    /// <summary>
+    ///     Updates a collaborators role in a note
+    /// </summary>
+    /// <param name="dto">DTO containing updated collaboration data</param>
+    /// <param name="noteOwnerId">ID of the note owner</param>
+    /// <returns>Collaborator response DTO if collaboration is updated</returns>
+    /// <exception cref="ArgumentException">thrown if userId or noteId are empty</exception>
+    /// <exception cref="ArgumentOutOfRangeException">thrown if role is outside or NoteRole enum range</exception>
+    /// <exception cref="InvalidOperationException">thrown when owner trys to change their role</exception>
+    /// <exception cref="KeyNotFoundException">thrown if note or collaboration can't be found</exception>
+    /// <exception cref="UnauthorizedAccessException">
+    ///     thrown if someone other than the note owner trys to update collaborator role
+    /// </exception>
+    public async Task<CollaboratorResponseDto> UpdateRole(UpdateRoleDto dto, Guid noteOwnerId)
     {
-        throw new NotImplementedException();
+        if (dto.UserId == Guid.Empty || dto.NoteId == Guid.Empty)
+            throw new ArgumentException("UserId and NoteId are required!");
+
+        if (!Enum.IsDefined(dto.Role))
+            throw new ArgumentOutOfRangeException(nameof(dto.Role));
+
+        if (dto.UserId == noteOwnerId)
+            throw new InvalidOperationException("Owner cannot change their role.");
+
+        var note = await _context.Notes
+            .FirstOrDefaultAsync(n => n.NoteId == dto.NoteId);
+
+        if (note == null)
+            throw new KeyNotFoundException("Note not found.");
+
+        if (note.OwnerId != noteOwnerId)
+            throw new UnauthorizedAccessException("Only the owner can update collaborators!");
+
+        var collab = await _context.NoteCollaborators
+            .FirstOrDefaultAsync(c => c.NoteId == dto.NoteId && c.UserId == dto.UserId);
+
+        if (collab == null)
+            throw new KeyNotFoundException("Collaboration not found.");
+
+        collab.Role = dto.Role;
+
+        await _context.SaveChangesAsync();
+
+        return new CollaboratorResponseDto
+        {
+            NoteId = collab.NoteId,
+            UserId = collab.UserId,
+            Role = collab.Role
+        };
+    }
+
+    /// <summary>
+    ///     Retrieves a list collaborators of collaborators for a note
+    /// </summary>
+    /// <param name="noteId">Note ID</param>
+    /// <param name="userId">ID of the user trying to get list of collaborators</param>
+    /// <returns>List of collaborator response DTOs</returns>
+    /// <exception cref="ArgumentException">thrown if userId or noteId are empty</exception>
+    /// <exception cref="KeyNotFoundException">thrown if note can't be found</exception>
+    /// <exception cref="UnauthorizedAccessException">
+    ///     thrown if who is not the note owner or a collaborator trys to get list of collaborators
+    /// </exception>
+    public async Task<List<CollaboratorResponseDto>> GetCollaborators(Guid noteId, Guid userId)
+    {
+        if (userId == Guid.Empty || noteId == Guid.Empty)
+            throw new ArgumentException("UserId and NoteId are required!");
+
+        var note = await _context.Notes
+            .FirstOrDefaultAsync(n => n.NoteId == noteId);
+
+        if (note == null)
+            throw new KeyNotFoundException("Note not found.");
+
+        // only owner or collaborator has access to get all collaborators
+        if (note.OwnerId != userId)
+        {
+            var hasAccess = await _context.NoteCollaborators
+                .AnyAsync(c => c.NoteId == noteId && c.UserId == userId);
+
+            if (!hasAccess)
+                throw new UnauthorizedAccessException("You do not have access to this note.");
+        }
+
+        return await _context.NoteCollaborators
+            .Where(c => c.NoteId == noteId)
+            .Select(c => new CollaboratorResponseDto
+            {
+                NoteId = c.NoteId,
+                UserId = c.UserId,
+                Role = c.Role
+            })
+            .ToListAsync();
     }
 }

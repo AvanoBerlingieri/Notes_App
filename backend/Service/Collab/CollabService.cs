@@ -8,5 +8,6 @@ public interface ICollabService
 
     Task RemoveCollaborator(DeleteCollaboratorDto dto, Guid noteOwnerId);
     
-    Task<CollaboratorResponseDto> UpdateRole(UpdateRoleDto dto, Guid collabId, Guid noteOwnerId);
+    Task<CollaboratorResponseDto> UpdateRole(UpdateRoleDto dto, Guid noteOwnerId);
+    Task<List<CollaboratorResponseDto>> GetCollaborators(Guid noteId, Guid userId);
 }
